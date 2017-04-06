@@ -8,6 +8,7 @@ using UnityEngine.Networking.Match;
 using UnityEngine.UI;
 //using UnityEngine.WSA;
 
+
 public class runLobbyManager : NetworkLobbyManager {
     public Text targetText;
     private Button soundOn;
@@ -47,11 +48,40 @@ public class runLobbyManager : NetworkLobbyManager {
 
     }
 
-    public void onCreateClicked() // bound to button which creates a match for lobby to be visible
+    public void onCreateClicked() // bound to button which creates a match for lobby to be visible; initiated by host
     {
         this.StartMatchMaker();
         matchMaker.CreateMatch("gameName", 4, true, "matchPassword", "", "", 0, 0, OnMatchCreate); // dummy parameters
        
+    }
+
+    public void onGoClicked()  // bound to button which enables player to join a listed match
+    {
+        this.StartMatchMaker();
+        print("attempting to join a listed match");
+        matchMaker.ListMatches(0, 5, "", false, 0, 0, OnMatchList);
+    }
+
+    public override void OnMatchList(bool success, string extendedInfo, List<MatchInfoSnapshot> matchList)
+    {
+        if (success)
+        {
+            if (matchList.Count != 0)
+            {
+                foreach (MatchInfoSnapshot snapshot in matchList)
+                {
+                    if (snapshot.currentSize < snapshot.maxSize)
+                    {
+                        Debug.Log("requested match/list of matches was returned, attempting to join");
+                        matchMaker.JoinMatch(snapshot.networkId, "matchPassword", "", "", 0, 0, OnMatchJoined);
+                        break;
+                    }
+
+                }
+            }
+            
+        }
+        
     }
 
     public override void OnMatchCreate(bool success, string extendedInfo, MatchInfo matchInfo)

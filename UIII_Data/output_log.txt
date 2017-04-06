@@ -1,35 +1,41 @@
-Initialize engine version: 5.5.1f1 (88d00a7498cd)
+Initialize engine version: 5.5.2f1 (3829d7f588f3)
 GfxDevice: creating device client; threaded=1
 Direct3D:
-    Version:  Direct3D 11.0 [level 11.0]
-    Renderer: NVIDIA GeForce 940M (ID=0x1347)
-    Vendor:   NVIDIA
-    VRAM:     2019 MB
-    Driver:   21.21.13.6909
+    Version:  Direct3D 11.0 [level 11.1]
+    Renderer: Intel(R) HD Graphics 5000 (ID=0xa26)
+    Vendor:   Intel
+    VRAM:     1136 MB
+    Driver:   20.19.15.4568
 Begin MonoManager ReloadAssembly
-Platform assembly: D:\Uni\UI.2 - Copy\UI.2 - Copy\UIII_Data\Managed\UnityEngine.dll (this message is harmless)
-Loading D:\Uni\UI.2 - Copy\UI.2 - Copy\UIII_Data\Managed\UnityEngine.dll into Unity Child Domain
-Platform assembly: D:\Uni\UI.2 - Copy\UI.2 - Copy\UIII_Data\Managed\Assembly-CSharp.dll (this message is harmless)
-Loading D:\Uni\UI.2 - Copy\UI.2 - Copy\UIII_Data\Managed\Assembly-CSharp.dll into Unity Child Domain
-Platform assembly: D:\Uni\UI.2 - Copy\UI.2 - Copy\UIII_Data\Managed\UnityEngine.UI.dll (this message is harmless)
-Loading D:\Uni\UI.2 - Copy\UI.2 - Copy\UIII_Data\Managed\UnityEngine.UI.dll into Unity Child Domain
-Platform assembly: D:\Uni\UI.2 - Copy\UI.2 - Copy\UIII_Data\Managed\UnityEngine.Networking.dll (this message is harmless)
-Loading D:\Uni\UI.2 - Copy\UI.2 - Copy\UIII_Data\Managed\UnityEngine.Networking.dll into Unity Child Domain
-Platform assembly: D:\Uni\UI.2 - Copy\UI.2 - Copy\UIII_Data\Managed\UnityEngine.PlaymodeTestsRunner.dll (this message is harmless)
-Loading D:\Uni\UI.2 - Copy\UI.2 - Copy\UIII_Data\Managed\UnityEngine.PlaymodeTestsRunner.dll into Unity Child Domain
-Platform assembly: D:\Uni\UI.2 - Copy\UI.2 - Copy\UIII_Data\Managed\UnityEngine.Analytics.dll (this message is harmless)
-Loading D:\Uni\UI.2 - Copy\UI.2 - Copy\UIII_Data\Managed\UnityEngine.Analytics.dll into Unity Child Domain
-- Completed reload, in  0.191 seconds
-Platform assembly: D:\Uni\UI.2 - Copy\UI.2 - Copy\UIII_Data\Managed\System.Core.dll (this message is harmless)
-Platform assembly: D:\Uni\UI.2 - Copy\UI.2 - Copy\UIII_Data\Managed\System.dll (this message is harmless)
-desktop: 1366x768 60Hz; virtual: 1366x768 at 0,0
+Platform assembly: C:\Users\johsi\Documents\ISTD Term 5\50.003 Elements of Software Construction\50003fatrun\UIII_Data\Managed\UnityEngine.dll (this message is harmless)
+Loading C:\Users\johsi\Documents\ISTD Term 5\50.003 Elements of Software Construction\50003fatrun\UIII_Data\Managed\UnityEngine.dll into Unity Child Domain
+Platform assembly: C:\Users\johsi\Documents\ISTD Term 5\50.003 Elements of Software Construction\50003fatrun\UIII_Data\Managed\Assembly-CSharp.dll (this message is harmless)
+Loading C:\Users\johsi\Documents\ISTD Term 5\50.003 Elements of Software Construction\50003fatrun\UIII_Data\Managed\Assembly-CSharp.dll into Unity Child Domain
+Platform assembly: C:\Users\johsi\Documents\ISTD Term 5\50.003 Elements of Software Construction\50003fatrun\UIII_Data\Managed\UnityEngine.UI.dll (this message is harmless)
+Loading C:\Users\johsi\Documents\ISTD Term 5\50.003 Elements of Software Construction\50003fatrun\UIII_Data\Managed\UnityEngine.UI.dll into Unity Child Domain
+Platform assembly: C:\Users\johsi\Documents\ISTD Term 5\50.003 Elements of Software Construction\50003fatrun\UIII_Data\Managed\UnityEngine.Networking.dll (this message is harmless)
+Loading C:\Users\johsi\Documents\ISTD Term 5\50.003 Elements of Software Construction\50003fatrun\UIII_Data\Managed\UnityEngine.Networking.dll into Unity Child Domain
+Platform assembly: C:\Users\johsi\Documents\ISTD Term 5\50.003 Elements of Software Construction\50003fatrun\UIII_Data\Managed\UnityEngine.PlaymodeTestsRunner.dll (this message is harmless)
+Loading C:\Users\johsi\Documents\ISTD Term 5\50.003 Elements of Software Construction\50003fatrun\UIII_Data\Managed\UnityEngine.PlaymodeTestsRunner.dll into Unity Child Domain
+- Completed reload, in  0.192 seconds
+Platform assembly: C:\Users\johsi\Documents\ISTD Term 5\50.003 Elements of Software Construction\50003fatrun\UIII_Data\Managed\System.Core.dll (this message is harmless)
+Platform assembly: C:\Users\johsi\Documents\ISTD Term 5\50.003 Elements of Software Construction\50003fatrun\UIII_Data\Managed\System.dll (this message is harmless)
+desktop: 2160x1440 59Hz; virtual: 2160x1440 at 0,0
 <RI> Initializing input.
 <RI> Input initialized.
 <RI> Initialized touch support.
-UnloadTime: 1.389021 ms
+UnloadTime: 1.951440 ms
 Setting up 1 worker threads for Enlighten.
-  Thread -> id: 549c -> priority: 1 
-Log: connection {1} has been disconnected by timeout; address {::ffff:10.12.8.236:58467}
+  Thread -> id: 51ac -> priority: 1 
+MatchMakingClient Create :https://mm.unet.unity3d.com/json/reply/CreateMatchRequest
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+OnMatchCreate
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Log: connection {1} has been disconnected by timeout; address {::ffff:52.74.170.4:9999}
 ServerDisconnected due to error: Timeout
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
