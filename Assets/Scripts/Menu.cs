@@ -17,6 +17,7 @@ public class Menu : MonoBehaviour
     public Canvas ChoosePartyModeCanvas;
     public Canvas AddPeopleCanvas;
     public Canvas JoinPartyCanvas;
+    public Canvas LoadingCanvas;
 
     void Awake()
     {
@@ -29,6 +30,7 @@ public class Menu : MonoBehaviour
         ChoosePartyModeCanvas.enabled = false;
         AddPeopleCanvas.enabled = false;
         JoinPartyCanvas.enabled = false;
+        LoadingCanvas.enabled = false;
 
     }
     public void OptionsOn()
@@ -43,6 +45,7 @@ public class Menu : MonoBehaviour
         ChoosePartyModeCanvas.enabled = false;
         AddPeopleCanvas.enabled = false;
         JoinPartyCanvas.enabled = false;
+        LoadingCanvas.enabled = false;
 
     }
     public void StartOn()
@@ -57,6 +60,7 @@ public class Menu : MonoBehaviour
         ChoosePartyModeCanvas.enabled = false;
         AddPeopleCanvas.enabled = false;
         JoinPartyCanvas.enabled = false;
+        LoadingCanvas.enabled = false;
 
     }
     public void ReturnOn()
@@ -70,6 +74,7 @@ public class Menu : MonoBehaviour
         ChoosePartyModeCanvas.enabled = false;
         AddPeopleCanvas.enabled = false;
         JoinPartyCanvas.enabled = false;
+        LoadingCanvas.enabled = false;
 
     }
 
@@ -85,6 +90,7 @@ public class Menu : MonoBehaviour
         ChoosePartyModeCanvas.enabled = false;
         AddPeopleCanvas.enabled = false;
         JoinPartyCanvas.enabled = false;
+        LoadingCanvas.enabled = false;
 
     }
     public void Help()
@@ -99,6 +105,7 @@ public class Menu : MonoBehaviour
         ChoosePartyModeCanvas.enabled = false;
         AddPeopleCanvas.enabled = false;
         JoinPartyCanvas.enabled = false;
+        LoadingCanvas.enabled = false;
 
     }
     public void closeHelp()
@@ -114,6 +121,7 @@ public class Menu : MonoBehaviour
         ChoosePartyModeCanvas.enabled = false;
         AddPeopleCanvas.enabled = false;
         JoinPartyCanvas.enabled = false;
+        LoadingCanvas.enabled = false;
 
     }
     public void choosePartyMode()
@@ -129,8 +137,10 @@ public class Menu : MonoBehaviour
         ChoosePartyModeCanvas.enabled = true;
         AddPeopleCanvas.enabled = false;
         JoinPartyCanvas.enabled = false;
+        LoadingCanvas.enabled = false;
 
     }
+
 
     public void createParty()
     {
@@ -145,6 +155,7 @@ public class Menu : MonoBehaviour
         ChoosePartyModeCanvas.enabled = false;
         AddPeopleCanvas.enabled = true;
         JoinPartyCanvas.enabled = false;
+        LoadingCanvas.enabled = false;
 
     }
 
@@ -160,10 +171,28 @@ public class Menu : MonoBehaviour
         MainCanvas.enabled = false;
         ChoosePartyModeCanvas.enabled = false;
         AddPeopleCanvas.enabled = false;
-
         JoinPartyCanvas.enabled = true;
+        LoadingCanvas.enabled = false;
 
     }
+
+    public void loading()
+    {
+        OptionsCanvas.enabled = false;
+        MainCanvas.enabled = false;
+        //  SelectModeCanvas.enabled = true;
+        //  FriendsModeCanvas.enabled = false;
+        CharacterSelectCanvas.enabled = false;
+        WaitingRoomCanvas.enabled = false;
+        MainCanvasWithHelpCanvas.enabled = false;
+        MainCanvas.enabled = false;
+        ChoosePartyModeCanvas.enabled = false;
+        AddPeopleCanvas.enabled = false;
+        JoinPartyCanvas.enabled = false;
+        LoadingCanvas.enabled = true;
+    }
+
+
     public void LoadOn()
     {
         SceneManager.LoadScene("ui2");

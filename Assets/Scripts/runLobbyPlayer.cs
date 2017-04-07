@@ -23,7 +23,7 @@ public class runLobbyPlayer : NetworkLobbyPlayer {
     int sprite_selected;
 
     [SyncVar]
-    bool thisPlayerReady;
+    public bool thisPlayerReady;
 
 	// Use this for initialization
 	void Start () {
@@ -54,8 +54,8 @@ public class runLobbyPlayer : NetworkLobbyPlayer {
     }
 
     void SetupSelf() {
-        GameObject container = GameObject.FindGameObjectWithTag("PlayerListPanel");
-        transform.SetParent(container.transform);
+        GameObject container = GameObject.FindGameObjectWithTag("PlayerListPanel");  // PlayerListPanel is child of WaitingRoomCanvas
+        transform.SetParent(container.transform); // sets incoming lobby player as child of PlayerListPanel
         if(isLocalPlayer)
         {
             setupLocal();
@@ -65,25 +65,20 @@ public class runLobbyPlayer : NetworkLobbyPlayer {
         }
     }
 
-    void setupLocal()
+    void setupLocal()  // if local player
     {
-        spriteLeft.interactable = true;
-        spriteRight.interactable = true;
-        readyButton.interactable = true;
-
-        //try
+        // makes buttons visible and clickable
         spriteLeft.gameObject.SetActive(true);
         spriteRight.gameObject.SetActive(true);
         readyButton.gameObject.SetActive(true);
 
+        GameObject camera = GameObject.FindGameObjectWithTag("MainCamera");
+        camera.GetComponent<Menu>().RandomMatchWaitingRoom();
+
     }
 
-    void setupOther()
+    void setupOther()  // if not local player
     {
-        spriteLeft.interactable = false;
-        spriteRight.interactable = false;
-        readyButton.interactable = false;
-
         //try
         spriteLeft.gameObject.SetActive(false);
         spriteRight.gameObject.SetActive(false);
@@ -95,6 +90,9 @@ public class runLobbyPlayer : NetworkLobbyPlayer {
     {
         base.OnClientEnterLobby();
         SetupSelf();
+
+        // adds player object to list in lobby manager
+        (runLobbyManager.singleton as runLobbyManager).AddLobbyPlayer(this);
     }
 
     public void toggleRight()

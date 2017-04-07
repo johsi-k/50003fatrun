@@ -17,21 +17,25 @@ Platform assembly: C:\Users\johsi\Documents\ISTD Term 5\50.003 Elements of Softw
 Loading C:\Users\johsi\Documents\ISTD Term 5\50.003 Elements of Software Construction\50003fatrun\UIII_Data\Managed\UnityEngine.Networking.dll into Unity Child Domain
 Platform assembly: C:\Users\johsi\Documents\ISTD Term 5\50.003 Elements of Software Construction\50003fatrun\UIII_Data\Managed\UnityEngine.PlaymodeTestsRunner.dll (this message is harmless)
 Loading C:\Users\johsi\Documents\ISTD Term 5\50.003 Elements of Software Construction\50003fatrun\UIII_Data\Managed\UnityEngine.PlaymodeTestsRunner.dll into Unity Child Domain
-- Completed reload, in  0.192 seconds
+- Completed reload, in  0.203 seconds
 Platform assembly: C:\Users\johsi\Documents\ISTD Term 5\50.003 Elements of Software Construction\50003fatrun\UIII_Data\Managed\System.Core.dll (this message is harmless)
 Platform assembly: C:\Users\johsi\Documents\ISTD Term 5\50.003 Elements of Software Construction\50003fatrun\UIII_Data\Managed\System.dll (this message is harmless)
 desktop: 2160x1440 59Hz; virtual: 2160x1440 at 0,0
 <RI> Initializing input.
 <RI> Input initialized.
 <RI> Initialized touch support.
-UnloadTime: 1.951440 ms
+UnloadTime: 1.319553 ms
 Setting up 1 worker threads for Enlighten.
-  Thread -> id: 51ac -> priority: 1 
+  Thread -> id: 2c28 -> priority: 1 
 MatchMakingClient Create :https://mm.unet.unity3d.com/json/reply/CreateMatchRequest
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
 
 OnMatchCreate
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+entering lobby
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
 

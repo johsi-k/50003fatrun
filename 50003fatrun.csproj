@@ -77,6 +77,7 @@
   <ItemGroup>
     <Compile Include="Assets\Scripts\AspectRatioScript.cs" />
     <Compile Include="Assets\Scripts\CharacterChange.cs" />
+    <Compile Include="Assets\Scripts\CharacterSelectUI.cs" />
     <Compile Include="Assets\Scripts\ControllingCameraAspectScript.cs" />
     <Compile Include="Assets\Scripts\Menu.cs" />
     <Compile Include="Assets\Scripts\Networking.cs" />

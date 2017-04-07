@@ -6,14 +6,19 @@ using System.Net;
 using UnityEngine.Networking;
 using UnityEngine.Networking.Match;
 using UnityEngine.UI;
+using System.Linq;
 //using UnityEngine.WSA;
 
 
 public class runLobbyManager : NetworkLobbyManager {
     public Text targetText;
+    public GameObject mainCamera;
     private Button soundOn;
     public Text mytext = null;
     int counter = 1;
+
+    // tracks if lobby players are ready on the client and saves local player state
+    private List<runLobbyPlayer> lobbyPlayers = new List<runLobbyPlayer>();
 
     public enum NetworkState
     {
@@ -48,6 +53,8 @@ public class runLobbyManager : NetworkLobbyManager {
 
     }
 
+
+
     public void onCreateClicked() // bound to button which creates a match for lobby to be visible; initiated by host
     {
         this.StartMatchMaker();
@@ -62,6 +69,8 @@ public class runLobbyManager : NetworkLobbyManager {
         matchMaker.ListMatches(0, 5, "", false, 0, 0, OnMatchList);
     }
 
+
+    // callback that happens when NetworkMatch.ListMatches request has been processed on server
     public override void OnMatchList(bool success, string extendedInfo, List<MatchInfoSnapshot> matchList)
     {
         if (success)
@@ -76,14 +85,13 @@ public class runLobbyManager : NetworkLobbyManager {
                         matchMaker.JoinMatch(snapshot.networkId, "matchPassword", "", "", 0, 0, OnMatchJoined);
                         break;
                     }
-
                 }
             }
-            
         }
-        
     }
 
+
+    // callback that happens when NetworkMatch.CreateMatch request has been processed on the server
     public override void OnMatchCreate(bool success, string extendedInfo, MatchInfo matchInfo)
     {
         base.OnMatchCreate(success, extendedInfo, matchInfo);
@@ -91,6 +99,7 @@ public class runLobbyManager : NetworkLobbyManager {
 
         if (success) {
             state = NetworkState.InLobby;
+            mainCamera.GetComponent<Menu>().RandomMatchWaitingRoom();  // throws UI from loading screen to waitingRoomCanvas
         }
 
         else
@@ -98,22 +107,9 @@ public class runLobbyManager : NetworkLobbyManager {
             state = NetworkState.Inactive;
         }
 
-        // Fire callback
-        if (m_NextMatchCreatedCallback != null)
-        {
-            m_NextMatchCreatedCallback(success, matchInfo);
-            m_NextMatchCreatedCallback = null;
-        }
-
-        // Fire event
-        if (matchCreated != null)
-        {
-            matchCreated(success, matchInfo);
-        }
-
     }
 
-
+    // callback that happens when NetworkMatch.JoinMatch request has been processed on the server
     public override void OnMatchJoined(bool success, string extendedInfo, MatchInfo matchInfo)
     {
         base.OnMatchJoined(success, extendedInfo, matchInfo);
@@ -121,6 +117,7 @@ public class runLobbyManager : NetworkLobbyManager {
 
         if (success)
         {
+            Debug.Log("loggggg");
             state = NetworkState.InLobby;
         }
         else
@@ -128,19 +125,18 @@ public class runLobbyManager : NetworkLobbyManager {
             state = NetworkState.Pregame;
         }
 
-        // Fire callback
-        if (m_NextMatchJoinedCallback != null)
-        {
-            m_NextMatchJoinedCallback(success, matchInfo);
-            m_NextMatchJoinedCallback = null;
-        }
+    }
 
-        // Fire event
-        if (matchJoined != null)
-        {
-            matchJoined(success, matchInfo); 
-        }
+    public override void OnLobbyClientEnter()
+    {
+        Debug.Log("entering lobby");
+        base.OnLobbyClientEnter();
+    }
 
+
+    public override void OnLobbyClientExit()
+    {
+        base.OnLobbyClientExit();
     }
 
     public override void OnLobbyClientConnect(NetworkConnection conn)
@@ -152,6 +148,39 @@ public class runLobbyManager : NetworkLobbyManager {
         
     }
 
+    
+    public void OnLobbyClientDisconnect()
+    {
+        Debug.Log("Client disconnected");
+    }
+
+    public override void OnStopServer()
+    {
+        Debug.Log("Server stopped");
+    }
+
+    // check that all players are ready in lobby
+    private bool checkAllReady()
+    {
+        return lobbyPlayers.All(p => p.thisPlayerReady);
+    }
+
+    // adds player to lobby when client enters lobby 
+    public void AddLobbyPlayer(runLobbyPlayer player)
+    {
+        lobbyPlayers.Add(player.GetComponent<runLobbyPlayer>());
+    }
+
+
+    // updates list of lobby players 
+    // removing objects which have become null (player disconnects)
+    private void UpdateLobbyPlayers()
+    {
+        if (lobbyPlayers.Count != numPlayers)
+        {
+            lobbyPlayers = lobbyPlayers.Where(p => p!=null).ToList();
+        }
+    }
 
 }
 
