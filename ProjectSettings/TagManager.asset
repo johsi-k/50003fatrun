@@ -5,6 +5,11 @@ TagManager:
   serializedVersion: 2
   tags:
   - PlayerListPanel
+  - Endpoint
+  - Fruit - Strawberry
+  - Fruit - Cherry
+  - Fruit - Melon
+  - Fruit - Apple
   layers:
   - Default
   - TransparentFX
@@ -41,4 +46,25 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Background4
+    uniqueID: 977499707
+    locked: 0
+  - name: Background3
+    uniqueID: 1441411445
+    locked: 0
+  - name: Background2
+    uniqueID: 2293462151
+    locked: 0
+  - name: Background1
+    uniqueID: 1699857507
+    locked: 0
+  - name: Tiles
+    uniqueID: 2815274891
+    locked: 0
+  - name: Units
+    uniqueID: 2568311123
+    locked: 0
+  - name: Canvas
+    uniqueID: 506026379
     locked: 0

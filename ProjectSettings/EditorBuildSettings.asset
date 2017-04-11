@@ -9,3 +9,5 @@ EditorBuildSettings:
     path: Assets/ui2.unity
   - enabled: 1
     path: Assets/playscene.unity
+  - enabled: 1
+    path: Assets/Game.unity

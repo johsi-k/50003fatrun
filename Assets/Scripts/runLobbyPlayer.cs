@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UnityEngine.Networking;
 
@@ -18,6 +19,7 @@ public class runLobbyPlayer : NetworkLobbyPlayer {
     static Color OrangeColor = new Color(251.0f / 255.0f, 176 / 255.0f, 59.0f / 255.0f, 1.0f);
 
     public bool isThisLocalPlayer;
+    public GameObject prefab;
 
     [SyncVar]
     int sprite_selected;
@@ -25,15 +27,25 @@ public class runLobbyPlayer : NetworkLobbyPlayer {
     [SyncVar]
     public bool thisPlayerReady;
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start()
+    {
+        //DontDestroyOnLoad(gameObject);
+
         SetupSelf();
         isThisLocalPlayer = isLocalPlayer;
         thisPlayerReady = readyToBegin;
-	}
-	
-	// Update is called once per frame
-	void Update () {
+
+    }
+
+
+    void Awake()
+    {
+       
+    }
+
+    // Update is called once per frame
+    void Update () {
         spriteRaw.texture = spriteList[sprite_selected];
         //CmdToggleReady(readyToBegin);
         if (thisPlayerReady)
@@ -51,6 +63,9 @@ public class runLobbyPlayer : NetworkLobbyPlayer {
             GetComponent<Image>().color = OrangeColor;
             //SendNotReadyToBeginMessage();
         }
+
+
+        
     }
 
     void SetupSelf() {
@@ -86,10 +101,33 @@ public class runLobbyPlayer : NetworkLobbyPlayer {
 
     }
 
+    void RemoveSelf()
+    {
+
+    }
+
+    void RemoveLocal()
+    {
+
+    }
+
+    void RemoveOther()
+    {
+
+    }
+
     public override void OnClientEnterLobby()
     {
         base.OnClientEnterLobby();
         SetupSelf();
+
+        //checks for GameScene and add player prefab
+        string scene = SceneManager.GetActiveScene().name;
+        print("At scene " + scene);
+        if (scene == "Game")
+        {
+
+        }
 
         // adds player object to list in lobby manager
         (runLobbyManager.singleton as runLobbyManager).AddLobbyPlayer(this);
@@ -134,6 +172,12 @@ public class runLobbyPlayer : NetworkLobbyPlayer {
         readyToBegin = ready;
         thisPlayerReady = ready;
         OnClientReady(readyToBegin);
+    }
+
+
+    public override void OnClientExitLobby()
+    {
+        base.OnClientExitLobby();
     }
 
 }

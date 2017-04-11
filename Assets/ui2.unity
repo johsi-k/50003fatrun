@@ -5639,7 +5639,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1182515192
 RectTransform:
   m_ObjectHideFlags: 0
@@ -7215,7 +7215,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1557647496
 RectTransform:
   m_ObjectHideFlags: 0
@@ -7642,7 +7642,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1603500750
 RectTransform:
   m_ObjectHideFlags: 0
@@ -9138,6 +9138,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2020803712}
   - component: {fileID: 2020803711}
+  - component: {fileID: 2020803713}
   m_Layer: 0
   m_Name: Network Manager
   m_TagString: Untagged
@@ -9219,10 +9220,10 @@ MonoBehaviour:
   m_MinPlayers: 0
   m_LobbyPlayerPrefab: {fileID: 114894783429227294, guid: d47ccba49bf9c0c41a0720894904cd47,
     type: 2}
-  m_GamePlayerPrefab: {fileID: 1324708747019118, guid: e4533c8ed91529540b043c13acfe813b,
+  m_GamePlayerPrefab: {fileID: 1894664540505690, guid: 1d4fdd2a156e34906bb84c5c67159724,
     type: 2}
   m_LobbyScene: ui2
-  m_PlayScene: playscene
+  m_PlayScene: Game
   lobbySlots: []
   targetText: {fileID: 0}
   mainCamera: {fileID: 872371579}
@@ -9240,6 +9241,17 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2020803713
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2020803710}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b4f2aa5edabe34269a7be60b0e672ca7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2034072448
 GameObject:
   m_ObjectHideFlags: 0

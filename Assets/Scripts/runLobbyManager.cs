@@ -50,7 +50,6 @@ public class runLobbyManager : NetworkLobbyManager {
 
     private void Update()
     {
-
     }
 
 
@@ -73,6 +72,7 @@ public class runLobbyManager : NetworkLobbyManager {
     // callback that happens when NetworkMatch.ListMatches request has been processed on server
     public override void OnMatchList(bool success, string extendedInfo, List<MatchInfoSnapshot> matchList)
     {
+        base.OnMatchList(success, extendedInfo, matchList);
         if (success)
         {
             if (matchList.Count != 0)
@@ -156,6 +156,7 @@ public class runLobbyManager : NetworkLobbyManager {
 
     public override void OnStopServer()
     {
+        base.OnStopServer();
         Debug.Log("Server stopped");
     }
 
@@ -182,5 +183,19 @@ public class runLobbyManager : NetworkLobbyManager {
         }
     }
 
-}
 
+    public override void OnLobbyServerPlayersReady()
+    {
+        foreach(runLobbyPlayer player in lobbyPlayers)
+        {
+            try
+            {
+                // detaches runLobbyPlayer from its parent (playerListPanel) and sets new parent to null
+                player.transform.SetParent(null, false);
+                DontDestroyOnLoad(player.gameObject);  
+            }
+            catch { }
+        }
+        base.OnLobbyServerPlayersReady();
+    }
+}
