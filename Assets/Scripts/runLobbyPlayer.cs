@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UnityEngine.Networking;
@@ -89,6 +87,10 @@ public class runLobbyPlayer : NetworkLobbyPlayer {
 
         GameObject camera = GameObject.FindGameObjectWithTag("MainCamera");
         camera.GetComponent<Menu>().RandomMatchWaitingRoom();
+        // throws UI from LoadingCanvas to WaitingRoomCanvas 
+        // this is called in setupLocal() because we know that
+        // once localPlayer is set up, all other lobbyplayers are
+        // also set up, hence the canvas is ready for viewing
 
     }
 
@@ -100,6 +102,8 @@ public class runLobbyPlayer : NetworkLobbyPlayer {
         readyButton.gameObject.SetActive(false);
 
     }
+
+
 
     void RemoveSelf()
     {
@@ -178,6 +182,7 @@ public class runLobbyPlayer : NetworkLobbyPlayer {
     public override void OnClientExitLobby()
     {
         base.OnClientExitLobby();
+
     }
 
 }

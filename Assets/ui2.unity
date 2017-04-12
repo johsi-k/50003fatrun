@@ -1127,8 +1127,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2020803711}
-        m_MethodName: onGoClicked
+      - m_Target: {fileID: 872371585}
+        m_MethodName: clickGoParty
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2991,8 +2991,8 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 2020803711}
-        m_MethodName: onCreateClicked
+      - m_Target: {fileID: 872371585}
+        m_MethodName: clickCreateParty
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -7991,6 +7991,17 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 872371585}
+        m_MethodName: clickQuitRoom
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &1689094669
@@ -9225,9 +9236,7 @@ MonoBehaviour:
   m_LobbyScene: ui2
   m_PlayScene: Game
   lobbySlots: []
-  targetText: {fileID: 0}
   mainCamera: {fileID: 872371579}
-  mytext: {fileID: 533484987}
 --- !u!4 &2020803712
 Transform:
   m_ObjectHideFlags: 0

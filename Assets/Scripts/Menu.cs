@@ -157,6 +157,8 @@ public class Menu : MonoBehaviour
         JoinPartyCanvas.enabled = false;
         LoadingCanvas.enabled = false;
 
+        clickCreateParty();
+
     }
 
     public void joinParty()
@@ -197,4 +199,22 @@ public class Menu : MonoBehaviour
     {
         SceneManager.LoadScene("ui2");
     }
+
+    public void clickCreateParty()
+    {
+        ((runLobbyManager.singleton) as runLobbyManager).onCreateClicked();
+    }
+
+    public void clickGoParty()
+    {
+        ((runLobbyManager.singleton) as runLobbyManager).onGoClicked();
+    }
+
+    public void clickQuitRoom()
+    {
+        ((runLobbyManager.singleton) as runLobbyManager).OnQuit();
+
+    }
+
+
 }

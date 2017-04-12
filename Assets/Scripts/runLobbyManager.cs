@@ -12,14 +12,14 @@ using UnityEngine.SceneManagement;
 
 
 public class runLobbyManager : NetworkLobbyManager {
-    public Text targetText;
+    //public Text targetText;
     public GameObject mainCamera;
     private Button soundOn;
-    public Text mytext = null;
+    //public Text mytext = null;
     int counter = 1;
 
     // tracks if lobby players are ready on the client and saves local player state
-    private List<runLobbyPlayer> lobbyPlayers = new List<runLobbyPlayer>();
+    public List<runLobbyPlayer> lobbyPlayers = new List<runLobbyPlayer>();
 
     public enum NetworkState
     {
@@ -51,6 +51,7 @@ public class runLobbyManager : NetworkLobbyManager {
 
     private void Update()
     {
+        UpdateLobbyPlayers();
     }
 
 
@@ -100,7 +101,8 @@ public class runLobbyManager : NetworkLobbyManager {
 
         if (success) {
             state = NetworkState.InLobby;
-            mainCamera.GetComponent<Menu>().RandomMatchWaitingRoom();  // throws UI from loading screen to waitingRoomCanvas
+            //mainCamera.GetComponent<Menu>().RandomMatchWaitingRoom();  
+            // throws UI from loading screen to waitingRoomCanvas 
         }
 
         else
@@ -144,7 +146,7 @@ public class runLobbyManager : NetworkLobbyManager {
     {
         base.OnLobbyClientConnect(conn);
         //Toast.Create(null, "Connected");
-        mytext.text = Network.player.ipAddress+"\n client connected "+counter;
+        //mytext.text = Network.player.ipAddress+"\n client connected "+counter;
         counter++;
         
     }
@@ -171,17 +173,19 @@ public class runLobbyManager : NetworkLobbyManager {
     public void AddLobbyPlayer(runLobbyPlayer player)
     {
         lobbyPlayers.Add(player.GetComponent<runLobbyPlayer>());
+        Debug.Log("adding player to lobby");
     }
 
 
     // updates list of lobby players 
-    // removing objects which have become null (player disconnects)
     private void UpdateLobbyPlayers()
     {
-        if (lobbyPlayers.Count != numPlayers)
-        {
-            lobbyPlayers = lobbyPlayers.Where(p => p!=null).ToList();
-        }
+        //if (lobbyPlayers.Count != numPlayers)
+        //{
+        // removing objects which have become null (player disconnects)
+        lobbyPlayers = lobbyPlayers.Where(p => p!=null).ToList();
+    
+        //}
     }
 
 
@@ -214,4 +218,47 @@ public class runLobbyManager : NetworkLobbyManager {
             NetworkServer.AddPlayerForConnection(conn, gamePlayerInstance, 0);
         }
     }
+
+    public void OnMatchDestroy(bool success, string extendedInfo)
+    {
+
+    }
+
+
+    public void OnQuit()
+    {
+        foreach (runLobbyPlayer player in lobbyPlayers)
+        {
+            if (player != null)
+            {
+                if (player.isLocalPlayer)
+                {
+                   
+                    if (player.isServer)  // if host ??? documentation: if object is active on an active server
+                    {
+                        //player.RemovePlayer();
+                        //Debug.Log("removing player");
+                      
+                        // stop client and server
+                        matchMaker.DestroyMatch(matchInfo.networkId, 0, OnMatchDestroy);
+                        singleton.StopHost();
+
+                        Debug.Log("Stopping host");
+                    }
+
+                    else
+                    {
+                        singleton.StopClient();
+                        Debug.Log("Stopping client");
+
+                        //player.RemovePlayer();
+                    }
+                }
+
+            }
+
+        }
+
+    }
+
 }
