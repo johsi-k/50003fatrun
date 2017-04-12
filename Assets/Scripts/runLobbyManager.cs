@@ -7,6 +7,7 @@ using UnityEngine.Networking;
 using UnityEngine.Networking.Match;
 using UnityEngine.UI;
 using System.Linq;
+using UnityEngine.SceneManagement;
 //using UnityEngine.WSA;
 
 
@@ -197,5 +198,20 @@ public class runLobbyManager : NetworkLobbyManager {
             catch { }
         }
         base.OnLobbyServerPlayersReady();
+
+    }
+
+
+    public override void OnServerAddPlayer(NetworkConnection conn, short playerControllerId)
+    {
+        base.OnServerAddPlayer(conn, playerControllerId);
+        if (SceneManager.GetActiveScene().name == "Game")
+        {
+            Vector3 spawn = GameObject.FindGameObjectWithTag("SpawnPoint").transform.position;
+            GameObject gamePlayerInstance = Instantiate(gamePlayerPrefab, spawn, Quaternion.identity);
+            // gamePlayer customisation goes here
+            NetworkServer.DestroyPlayersForConnection(conn);
+            NetworkServer.AddPlayerForConnection(conn, gamePlayerInstance, 0);
+        }
     }
 }

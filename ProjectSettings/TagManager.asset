@@ -10,6 +10,7 @@ TagManager:
   - Fruit - Cherry
   - Fruit - Melon
   - Fruit - Apple
+  - SpawnPoint
   layers:
   - Default
   - TransparentFX
