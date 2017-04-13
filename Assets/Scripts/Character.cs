@@ -7,7 +7,8 @@ using UnityEngine.Networking;
 
 public class Character : NetworkBehaviour {
 
-	public float health = 1f;
+
+	private float health = 1f;
 	private float healthDropRate = 0.01f;
 	private Image healthContent;
 	private Text healthText;
@@ -22,6 +23,7 @@ public class Character : NetworkBehaviour {
 	// whether fruit is eaten
 	private bool isBoosted = false;
 
+	// whether these attributes are altered by fruits
 	private bool isMoveSpeedControlled = false;
 	private bool isJumpForceControlled = false;
 	private bool isAnimSpeedControlled = false;
@@ -34,20 +36,6 @@ public class Character : NetworkBehaviour {
 	private UnityEngine.Object isAnimSpeedControlledLock = new UnityEngine.Object ();
 	private UnityEngine.Object isScaleControlledLock = new UnityEngine.Object ();
 
- //	[System.Serializable]
-//	private class Size {
-//		public float moveSpeed;
-//		public float spriteScale;
-//		public float jumpForce;
-//		public float animationMoveSpeed;
-//
-//		public Size(float moveSpeed, float jumpForce, float spriteScale, float animMS) {
-//			this.moveSpeed = moveSpeed;
-//			this.jumpForce = jumpForce;
-//			this.spriteScale = spriteScale;
-//			this.animationMoveSpeed = animMS;
-//		}
-//	}
 	private Rigidbody2D rb;
 	private Collider2D collider;
 	private Animator anim;
@@ -61,23 +49,8 @@ public class Character : NetworkBehaviour {
 	private static int jumpStateHash = Animator.StringToHash ("CatJump");
 	private static int fallStateHash = Animator.StringToHash ("CatFall");
 
+	// the current animation state
 	private int currentState;
-
-//	private Size[] sizes = {
-//		new Size (5f, 15f, 2.5f, 0.5f),
-//		new Size (8f, 18f, 2.35f, 0.6f),
-//		new Size (11f, 21f, 2.2f, 0.7f),
-//		new Size (14f, 24f, 2.05f, 0.8f),
-//		new Size (17f, 27f, 1.9f, 0.9f),
-//		new Size (20f, 30f, 1.75f, 1f),
-//		new Size (23f, 33f, 1.6f, 1.1f),
-//		new Size (26f, 36f, 1.45f, 1.2f),
-//		new Size (29f, 39f, 1.3f, 1.3f),
-//		new Size (32f, 42f, 1.15f, 1.4f),
-//		new Size (35f, 45f, 1f, 1.5f)
-//	};
-//
-//	private Size currentSize;
 
 	[SerializeField]
 	private bool grounded = true;
@@ -110,17 +83,24 @@ public class Character : NetworkBehaviour {
 			return;
 		}
 
+		// links the health and fat text on the canvas to the character
 		healthContent = GameObject.Find ("/Canvas/HealthBar/Health").GetComponent<Image> ();
 		healthText = GameObject.Find ("/Canvas/HealthBar/HealthText").GetComponent<Text> ();
 		fatContent = GameObject.Find ("/Canvas/FatBar/Fats").GetComponent<Image> ();
 		fatText = GameObject.Find ("/Canvas/FatBar/FatsText").GetComponent<Text> ();
+
+		// enables the camera to track the player
 		Camera.main.GetComponent<CameraTracker>().setTarget(gameObject.transform);
 		GameObject.Find ("Background").GetComponent<CameraTracker> ().setTarget (gameObject.transform);
+
+		// prevents character from experiencing rotation due to gravity
 		rb.freezeRotation = true;
-		lastPosition = (Vector2) transform.position - Vector2.left; // initialize
-//		UpdateStatsWithSize ();
+
+		// used to nudge the character a little if it gets stuck for unknown reasons
+		lastPosition = (Vector2) transform.position - Vector2.left;
 	}
 
+	// Reduces the fat level based on the fat drop rate
 	bool UpdateFatLevel() {
 		// returns true if fat level > 0
 		if (fatLevel > 0) {
@@ -131,6 +111,7 @@ public class Character : NetworkBehaviour {
 		}
 	}
 
+	// Reduces the health based on the health drop rate
 	bool UpdateHealth() {
 		// returns true if health > 0
 		if (health > 0) {
@@ -164,15 +145,22 @@ public class Character : NetworkBehaviour {
 //	}
 //		
 
-	void FixedUpdate() {
+	// if character is stuck, nudge it a little
+	void NudgeCharacter() {
 		Vector2 currentPosition = transform.position;
 
-		// if character is stuck, nudge it a little
 		if (currentPosition.Equals (lastPosition)) {
 			transform.position = currentPosition + new Vector2 (2, 0);;
 		}
 
 		lastPosition = currentPosition;
+	}
+
+	void FixedUpdate() {
+		if (!isLocalPlayer) {
+			return;
+		}
+		NudgeCharacter ();
 	}
 
 	// Update is called once per frame
@@ -234,36 +222,97 @@ public class Character : NetworkBehaviour {
 
 		if (!grounded) {
 			notGroundedCount++;
-//			ms = ms;
+			// ms = ms;
 		} else {
 			notGroundedCount = 0;
 		}
 		// movement speed
-		rb.velocity = new Vector2 (50f, rb.velocity.y);
+		rb.velocity = new Vector2 (1f, rb.velocity.y);
 
-
+		/////////////////
+		// Player Control
+		/////////////////
 
 		// state machine for animation
 		int currentState = anim.GetCurrentAnimatorStateInfo (0).shortNameHash;
 		if (currentState == runStateHash) {
 			if (Input.GetKeyDown (KeyCode.Space) || (Input.touchCount > 0 && Input.GetTouch (0).phase == TouchPhase.Began)) {
-				rb.velocity = new Vector2 (ms, jumpForce);
-				anim.SetBool ("isJump", true);
+				Jump (ms, jumpForce);
+				CmdJump (ms, jumpForce);
 			}
 			// To avoid state change when size changes (Hack)
-//			if (!hasChangedSize)
+			// if (!hasChangedSize)
 			else if (notGroundedCount >= 10) {
-				anim.SetBool ("isJump", true);
+				ChangeJump (true);
+				CmdChangeJump (true);
 			}
 		} else if (currentState == jumpStateHash) {
-			anim.SetBool ("isJump", !grounded);
-			anim.SetBool ("isFall", rb.velocity.y <= 0);
+			ChangeJump (!grounded);
+			CmdChangeJump (!grounded);
+			ChangeFall (rb.velocity.y <= 0);
+			CmdChangeFall (rb.velocity.y <= 0);
 		} else if (currentState == fallStateHash) {
-			anim.SetBool ("isJump", !grounded);
+			ChangeJump (!grounded);
+			CmdChangeJump (!grounded);
 		}
 	}
 
-	void addFats(float fats) {
+
+	// CHANGE TO FALL ANIMATION
+	void ChangeFall(bool isFall) {
+		anim.SetBool ("isFall", isFall);
+	}
+
+	[Command]
+	void CmdChangeFall(bool isFall) {
+		RpcChangeFall (isFall);
+	}
+
+	[ClientRpc]
+	void RpcChangeFall(bool isFall) {
+		if (isLocalPlayer)
+			return;
+		ChangeFall (isFall);
+	}
+
+	// CHANGE TO JUMP ANIMATION
+	void ChangeJump(bool isJump) {
+		anim.SetBool ("isJump", isJump);
+	}
+
+	[Command]
+	void CmdChangeJump(bool isJump) {
+		RpcChangeJump(isJump);
+	}
+
+	[ClientRpc]
+	void RpcChangeJump(bool isJump) {
+		if (isLocalPlayer)
+			return;
+		ChangeJump(isJump);
+	}
+
+
+	// JUMP AND CHANGE TO JUMP ANIMATION
+	void Jump(double ms, double jumpForce) {
+		rb.velocity = new Vector2 (ms, jumpForce);
+		ChangeJump (true);
+	}
+
+	[Command]
+	void CmdJump(double ms, double jumpForce) {
+		RpcJump(ms, jumpForce);
+	}
+
+	[ClientRpc]
+	void RpcJump(double ms, double jumpForce) {
+		if (isLocalPlayer)
+			return;
+		Jump (ms, jumpForce);
+	}
+		
+
+	void AddFats(float fats) {
 		// need synchronity
 		fatLevel += fats;
 		if (fatLevel > 1.0f) {
@@ -271,7 +320,7 @@ public class Character : NetworkBehaviour {
 		}
 	}
 
-	void addHealth(float hp) {
+	void AddHealth(float hp) {
 		// need synchronity
 		health += hp;
 		if (health > 1.0f) {
@@ -337,8 +386,8 @@ public class Character : NetworkBehaviour {
 		// fruits
 		if (other.tag.Contains ("Fruit")) {
 			// add health and fats
-			addHealth(0.2f);
-			addFats (0.05f);
+			AddHealth(0.2f);
+			AddFats (0.05f);
 			PlusPopUpController.createHealthPlusPopUp ("+20% hp");
 			PlusPopUpController.createFatsPlusPopUp ("+5% fats");
 			Destroy (other.gameObject);
