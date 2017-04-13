@@ -8,12 +8,14 @@ using UnityEngine.Networking;
 public class Character : NetworkBehaviour {
 
 
+	[SyncVar]
 	private float health = 1f;
 	private float healthDropRate = 0.01f;
 	private Image healthContent;
 	private Text healthText;
 
 	// amount of fats: from 0-1
+	[SyncVar]
 	private float fatLevel = 1f;
 	// how much fats to drop per sec
 	private float fatDropRate = 0.1f;
@@ -166,17 +168,10 @@ public class Character : NetworkBehaviour {
 	// Update is called once per frame
 	void Update () {
 		// Reduce fats
-		if (!isLocalPlayer) {
-			return;
-		}
 		bool fatLevelChanged = UpdateFatLevel ();
-		fatContent.fillAmount = fatLevel;
-		fatText.text = (int)(100 * fatLevel) + "%";
 
 		// Reduce health
 		bool healthLevelChanged = UpdateHealth ();
-		healthContent.fillAmount = health;
-		healthText.text = (int)(100 * health) + "%";
 
 //		int sizeIndex = GetSizeIndexFromLevel ();
 //		Size newSize = sizes [sizeIndex];
@@ -211,23 +206,33 @@ public class Character : NetworkBehaviour {
 			rb.AddForce (new Vector2 (0, -2), ForceMode2D.Impulse);
 		}
 
+		float ms = 1f;
+		rb.velocity = new Vector2 (ms, rb.velocity.y);
 
-//		Debug.DrawLine(transform.position, new Vector2(0, collider.bounds.extents.y), Color.green);
+		// ONLY THE REST ARE LOCAL
+		if (!isLocalPlayer) {
+			return;
+		}
+		// Change fat bar content and text
+		fatContent.fillAmount = fatLevel;
+		fatText.text = (int)(100 * fatLevel) + "%";
+
+		// Change health bar content and text
+		healthContent.fillAmount = health;
+		healthText.text = (int)(100 * health) + "%";
+
+		//	Debug.DrawLine(transform.position, new Vector2(0, collider.bounds.extents.y), Color.green);
 		grounded = collider.Raycast(Vector2.down, rchresults, (float) (collider.bounds.extents.y + 0.3)) > 0;
 		sideGrounded = collider.Raycast (Vector2.right + Vector2.down, rchresults, (float)(collider.bounds.extents.y + 1.0)) > 0;
 		grounded = grounded || sideGrounded;
 
-		float ms = moveSpeed;
-
-
+			
 		if (!grounded) {
 			notGroundedCount++;
-			// ms = ms;
 		} else {
 			notGroundedCount = 0;
 		}
-		// movement speed
-		rb.velocity = new Vector2 (1f, rb.velocity.y);
+
 
 		/////////////////
 		// Player Control
@@ -294,18 +299,18 @@ public class Character : NetworkBehaviour {
 
 
 	// JUMP AND CHANGE TO JUMP ANIMATION
-	void Jump(double ms, double jumpForce) {
+	void Jump(float ms, float jumpForce) {
 		rb.velocity = new Vector2 (ms, jumpForce);
 		ChangeJump (true);
 	}
 
 	[Command]
-	void CmdJump(double ms, double jumpForce) {
+	void CmdJump(float ms, float jumpForce) {
 		RpcJump(ms, jumpForce);
 	}
 
 	[ClientRpc]
-	void RpcJump(double ms, double jumpForce) {
+	void RpcJump(float ms, float jumpForce) {
 		if (isLocalPlayer)
 			return;
 		Jump (ms, jumpForce);
