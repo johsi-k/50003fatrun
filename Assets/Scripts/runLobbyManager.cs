@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Net;
 using UnityEngine.Networking;
 using UnityEngine.Networking.Match;
 using UnityEngine.UI;
@@ -17,6 +15,8 @@ public class runLobbyManager : NetworkLobbyManager {
     private Button soundOn;
     //public Text mytext = null;
     int counter = 1;
+    private static System.Random random = new System.Random();
+    public string partyID;  // for match CREATION
 
     // tracks if lobby players are ready on the client and saves local player state
     public List<runLobbyPlayer> lobbyPlayers = new List<runLobbyPlayer>();
@@ -54,13 +54,21 @@ public class runLobbyManager : NetworkLobbyManager {
         UpdateLobbyPlayers();
     }
 
+    public static string RandomString(int length)
+    {
+        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        return new string(Enumerable.Repeat(chars, length)
+          .Select(s => s[random.Next(s.Length)]).ToArray());
+    }
 
 
     public void onCreateClicked() // bound to button which creates a match for lobby to be visible; initiated by host
     {
         this.StartMatchMaker();
-        matchMaker.CreateMatch("gameName", 4, true, "matchPassword", "", "", 0, 0, OnMatchCreate); // dummy parameters
-       
+        partyID = RandomString(4);
+        print("randomstring: " + partyID);
+        matchMaker.CreateMatch(partyID, 4, true, "matchPassword", "", "", 0, 0, OnMatchCreate); 
+        // partyID is passed into MatchInfoSnapshot.name when match is created
     }
 
     public void onGoClicked()  // bound to button which enables player to join a listed match
@@ -68,6 +76,7 @@ public class runLobbyManager : NetworkLobbyManager {
         this.StartMatchMaker();
         print("attempting to join a listed match");
         matchMaker.ListMatches(0, 5, "", false, 0, 0, OnMatchList);
+        // MatchInfoSnapshot is only generated here, not when match is created
     }
 
 
@@ -75,20 +84,35 @@ public class runLobbyManager : NetworkLobbyManager {
     public override void OnMatchList(bool success, string extendedInfo, List<MatchInfoSnapshot> matchList)
     {
         base.OnMatchList(success, extendedInfo, matchList);
-        if (success)
+        if (success)  // list of (possibly non-empty) matches received 
         {
-            if (matchList.Count != 0)
+            if (matchList.Count != 0)  // if list is non-empty
             {
+            
+                string partyIDInputted = GameObject.FindGameObjectWithTag("partyIDInput").GetComponent<InputField>().text;
                 foreach (MatchInfoSnapshot snapshot in matchList)
                 {
-                    if (snapshot.currentSize < snapshot.maxSize)
+                    print("match name from matchinfosnapshot: " + snapshot.name);
+
+                    // checks if inputted party ID corresponds to a party ID of any of the existing matches
+                    // and if match has not reached capacity
+                    if (snapshot.name == partyIDInputted && snapshot.currentSize < snapshot.maxSize)
                     {
                         Debug.Log("requested match/list of matches was returned, attempting to join");
                         matchMaker.JoinMatch(snapshot.networkId, "matchPassword", "", "", 0, 0, OnMatchJoined);
-                        break;
+                        //break;
+                        return;
                     }
                 }
             }
+
+            // whether list is empty or not, if JoinMatch() is not called, 
+            // player fails to join and returns to JoinPartyCanvas
+            GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Menu>().joinParty();
+
+            // before returning to JoinPartyCanvas, an error message is displayed
+            // error panel is first sibling (backmost child of the canvas) under normal circumstances; becomes last sibling (foremost child) when player fails to join
+            GameObject.FindGameObjectWithTag("ErrorMessage").GetComponent<RectTransform>().SetAsLastSibling();      
         }
     }
 
@@ -97,12 +121,14 @@ public class runLobbyManager : NetworkLobbyManager {
     public override void OnMatchCreate(bool success, string extendedInfo, MatchInfo matchInfo)
     {
         base.OnMatchCreate(success, extendedInfo, matchInfo);
-        Debug.Log("OnMatchCreate");
+        Debug.Log("matched created");
+
 
         if (success) {
             state = NetworkState.InLobby;
-            //mainCamera.GetComponent<Menu>().RandomMatchWaitingRoom();  
-            // throws UI from loading screen to waitingRoomCanvas 
+            Text partyIDText = GameObject.FindGameObjectWithTag("PartyID").GetComponent<Text>();
+            partyIDText.text = partyID;
+            
         }
 
         else
@@ -117,6 +143,9 @@ public class runLobbyManager : NetworkLobbyManager {
     {
         base.OnMatchJoined(success, extendedInfo, matchInfo);
         Debug.Log("OnMatchJoined");
+
+        Text partyIDText = GameObject.FindGameObjectWithTag("PartyID").GetComponent<Text>();
+        partyIDText.text = "";
 
         if (success)
         {

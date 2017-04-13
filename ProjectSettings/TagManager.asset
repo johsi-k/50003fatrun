@@ -11,6 +11,9 @@ TagManager:
   - Fruit - Melon
   - Fruit - Apple
   - SpawnPoint
+  - PartyID
+  - partyIDInput
+  - ErrorMessage
   layers:
   - Default
   - TransparentFX

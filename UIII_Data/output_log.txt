@@ -17,21 +17,25 @@ Platform assembly: C:\Users\johsi\Documents\ISTD Term 5\50.003 Elements of Softw
 Loading C:\Users\johsi\Documents\ISTD Term 5\50.003 Elements of Software Construction\50003fatrun\UIII_Data\Managed\UnityEngine.Networking.dll into Unity Child Domain
 Platform assembly: C:\Users\johsi\Documents\ISTD Term 5\50.003 Elements of Software Construction\50003fatrun\UIII_Data\Managed\UnityEngine.PlaymodeTestsRunner.dll (this message is harmless)
 Loading C:\Users\johsi\Documents\ISTD Term 5\50.003 Elements of Software Construction\50003fatrun\UIII_Data\Managed\UnityEngine.PlaymodeTestsRunner.dll into Unity Child Domain
-- Completed reload, in  0.116 seconds
+- Completed reload, in  0.088 seconds
 Platform assembly: C:\Users\johsi\Documents\ISTD Term 5\50.003 Elements of Software Construction\50003fatrun\UIII_Data\Managed\System.Core.dll (this message is harmless)
 Platform assembly: C:\Users\johsi\Documents\ISTD Term 5\50.003 Elements of Software Construction\50003fatrun\UIII_Data\Managed\System.dll (this message is harmless)
 desktop: 2160x1440 59Hz; virtual: 2160x1440 at 0,0
 <RI> Initializing input.
 <RI> Input initialized.
 <RI> Initialized touch support.
-UnloadTime: 1.461906 ms
+UnloadTime: 1.501177 ms
 Setting up 1 worker threads for Enlighten.
-  Thread -> id: 3e08 -> priority: 1 
+  Thread -> id: 33d4 -> priority: 1 
+randomstring: 9MJ9
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
 MatchMakingClient Create :https://mm.unet.unity3d.com/json/reply/CreateMatchRequest
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
 
-OnMatchCreate
+matched created
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
 
@@ -55,8 +59,49 @@ adding player to lobby
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
 
-Log: connection {1} has been disconnected by timeout; address {::ffff:52.77.65.224:9999}
-ServerDisconnected due to error: Timeout
+MatchMakingClient Destroy :https://mm.unet.unity3d.com/json/reply/DestroyMatchRequest
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Server stopped
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+MatchMakingClient DropConnection :https://mm.unet.unity3d.com/json/reply/DropConnectionRequest
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Unloading 4 Unused Serialized files (Serialized files now loaded: 0)
+Stopping host
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+UnloadTime: 20.079369 ms
+
+Unloading 4 unused Assets to reduce memory usage. Loaded Objects now: 1004.
+Total: 35.388794 ms (FindLiveObjects: 0.184746 ms CreateObjectMapping: 0.113793 ms MarkObjects: 35.064373 ms  DeleteObjects: 0.024989 ms)
+
+randomstring: 5RGJ
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+MatchMakingClient Create :https://mm.unet.unity3d.com/json/reply/CreateMatchRequest
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+matched created
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+entering lobby
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+At scene ui2
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+adding player to lobby
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
 
