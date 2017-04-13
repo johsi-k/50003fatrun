@@ -3,6 +3,9 @@
 /[Oo]bj/
 /[Bb]uild/
 /[Bb]uilds/
+/UIII_Data/
+/ProjectSettings/
+UIII.exe
 
 /Assets/AssetStoreTools*
 
@@ -23,6 +26,7 @@ ExportedObj/
 *.booproj
 *.svd
 *.pdb
+*.app
 
 # Unity3D generated meta files
 *.pidb.meta
