@@ -23,6 +23,7 @@ GameObject:
   - component: {fileID: 61904363318465774}
   - component: {fileID: 50924749297019592}
   - component: {fileID: 61005631277670508}
+  - component: {fileID: 114325812582245602}
   m_Layer: 8
   m_Name: Melon
   m_TagString: Fruit - Melon
@@ -91,6 +92,38 @@ BoxCollider2D:
   m_Offset: {x: 0, y: -0.010315418}
   serializedVersion: 2
   m_Size: {x: 0.38, y: 0.4406317}
+--- !u!114 &114325812582245602
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1052023575163980}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 372142912, guid: dc443db3e92b4983b9738c1131f555cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SceneId:
+    m_Value: 0
+  m_AssetId:
+    i0: 72
+    i1: 121
+    i2: 105
+    i3: 0
+    i4: 248
+    i5: 176
+    i6: 244
+    i7: 215
+    i8: 56
+    i9: 188
+    i10: 200
+    i11: 112
+    i12: 130
+    i13: 190
+    i14: 172
+    i15: 188
+  m_ServerOnly: 0
+  m_LocalPlayerAuthority: 0
 --- !u!212 &212717308109632576
 SpriteRenderer:
   m_ObjectHideFlags: 1

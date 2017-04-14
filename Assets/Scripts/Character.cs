@@ -194,7 +194,7 @@ public class Character : NetworkBehaviour {
 				// lock so that if food is eaten, moveSpeed will not be changed by this
 				lock (isMoveSpeedControlledLock) {
 					if (!isMoveSpeedControlled) // if ms not controlled by food
-				moveSpeedSync = Mathf.Lerp (30f, 5f, fatLevel);
+				moveSpeedSync = Mathf.Lerp (35f, 5f, fatLevel);
 				}
 				// same logic
 				lock (isJumpForceControlledLock) {
@@ -345,6 +345,8 @@ public class Character : NetworkBehaviour {
 		health += hp;
 		if (health > 1.0f) {
 			health = 1.0f;
+		} else if (health < 0f) {
+			health = 0f;
 		}
 	}
 
@@ -364,7 +366,7 @@ public class Character : NetworkBehaviour {
 		lock(isMoveSpeedControlledLock) {
 			isMoveSpeedControlled = true;
 			prevMoveSpeed = moveSpeedSync;
-			moveSpeedSync = 50.0f;
+			moveSpeedSync = 60.0f;
 		}
 		yield return new WaitForSecondsRealtime (seconds);
 		lock (isAnimSpeedControlledLock) {
@@ -414,36 +416,74 @@ public class Character : NetworkBehaviour {
 	void OnTriggerEnter2D(Collider2D other) {
 		// fruits
 		if (other.tag.Contains ("Fruit")) {
-			// add health and fats
-			AddHealth (0.2f);
-			CmdAddFats (0.05f);
-			if (isLocalPlayer) {
-				PlusPopUpController.createHealthPlusPopUp ("+20% hp");
-				PlusPopUpController.createFatsPlusPopUp ("+5% fats");
-			}
-			Destroy (other.gameObject);
+			OnFruitContact (other);
+		} else if (other.tag.Contains ("JunkFood")) {
+			OnJunkFoodContact (other);
+		}
+	}
 
-			if (other.tag.Contains ("Cherry")) {
-				// gain lock on state
-				lock (isBoostedLock) {
-					if (!isBoosted) {
-						if (isLocalPlayer) {
-							BoostPopUpController.createBoostPopUp ("FOOD BURST!");
-							CmdSpeedUpCoroutine (5.0f);
-						}
-						isBoosted = true;							
+	void OnJunkFoodContact(Collider2D other) {
+		// add health and fats
+		// if hamburger, grow more fats
+		if (other.tag.Contains ("Hamburger")) {
+			AddHealth (0.01f);
+			CmdAddFats (1.0f);
+			if (isLocalPlayer) {
+				PlusPopUpController.createHealthPlusPopUp ("+1% hp");
+				PlusPopUpController.createFatsPlusPopUp ("+100% fats");
+				BoostPopUpController.createBoostPopUp2 ("DISGUSTING!");
+			}
+		} else if (other.tag.Contains ("Dung")) {
+			AddHealth (-0.2f);
+			CmdAddFats (0.15f);
+			if (isLocalPlayer) {
+				PlusPopUpController.createHealthPlusPopUp ("-50% hp");
+				PlusPopUpController.createFatsPlusPopUp ("+15% fats");
+				BoostPopUpController.createBoostPopUp2 ("EWW GROSS!");
+			}
+		} else {
+			AddHealth (0.05f);
+			CmdAddFats (0.5f);
+			if (isLocalPlayer) {
+				PlusPopUpController.createHealthPlusPopUp ("+5% hp");
+				PlusPopUpController.createFatsPlusPopUp ("+50% fats");
+			}
+		}
+
+		Destroy (other.gameObject);
+
+	}
+
+	void OnFruitContact(Collider2D other) {
+		// add health and fats
+		AddHealth (0.2f);
+		CmdAddFats (0.05f);
+		if (isLocalPlayer) {
+			PlusPopUpController.createHealthPlusPopUp ("+20% hp");
+			PlusPopUpController.createFatsPlusPopUp ("+5% fats");
+		}
+		Destroy (other.gameObject);
+
+		if (other.tag.Contains ("Cherry")) {
+			// gain lock on state
+			lock (isBoostedLock) {
+				if (!isBoosted) {
+					if (isLocalPlayer) {
+						BoostPopUpController.createBoostPopUp ("FOOD BURST!");
+						CmdSpeedUpCoroutine (3.0f);
 					}
+					isBoosted = true;							
 				}
 			}
-			if (other.tag.Contains ("Apple")) {
-				// gain lock on state
-				lock (isBoostedLock) {
-					if (!isBoosted) {
-						isBoosted = true;
-						if (isLocalPlayer) {
-							BoostPopUpController.createBoostPopUp ("SUPER JUMP!");
+		}
+		if (other.tag.Contains ("Apple")) {
+			// gain lock on state
+			lock (isBoostedLock) {
+				if (!isBoosted) {
+					isBoosted = true;
+					if (isLocalPlayer) {
+						BoostPopUpController.createBoostPopUp ("SUPER JUMP!");
 						CmdJumpForceCoroutine (5.0f);
-						}
 					}
 				}
 			}

@@ -9739,12 +9739,24 @@ MonoBehaviour:
   m_ScriptCRCCheck: 1
   m_MaxDelay: 0.01
   m_LogLevel: 2
-  m_PlayerPrefab: {fileID: 0}
+  m_PlayerPrefab: {fileID: 1894664540505690, guid: 1d4fdd2a156e34906bb84c5c67159724,
+    type: 2}
   m_AutoCreatePlayer: 1
   m_PlayerSpawnMethod: 0
   m_OfflineScene: ui2
   m_OnlineScene: 
-  m_SpawnPrefabs: []
+  m_SpawnPrefabs:
+  - {fileID: 1485168414638892, guid: a2fc7b9c6caa04afdacdb1d117ea7370, type: 2}
+  - {fileID: 1606082201586630, guid: d92a6b1039cf4461db03f9156254339c, type: 2}
+  - {fileID: 1052023575163980, guid: 48796900f8b0f4d738bcc87082beacbc, type: 2}
+  - {fileID: 1849435976055272, guid: 16e9c4bddce6d4be99c39884d58583f6, type: 2}
+  - {fileID: 1651143773582962, guid: 42d81e96cfab440c28f8e65dbf7f0066, type: 2}
+  - {fileID: 1816720973171826, guid: ea08c962f41284f008f40d52479e530b, type: 2}
+  - {fileID: 1688059751798064, guid: 494920076e57c492db3e607f9bf956af, type: 2}
+  - {fileID: 1895109347476296, guid: 7a2484db3afa949bebfd3d2e972b1784, type: 2}
+  - {fileID: 1895906934038484, guid: cafc90e458a814652bab63def09a6529, type: 2}
+  - {fileID: 1473760820018630, guid: 6bb90e0ddacb242a3a1227cc0fcb3a68, type: 2}
+  - {fileID: 1612547800607138, guid: 79aa8b9c18cad479bbaf4a8bc76b83c8, type: 2}
   m_CustomConfig: 0
   m_MaxConnections: 4
   m_ConnectionConfig:

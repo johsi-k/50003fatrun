@@ -9,7 +9,7 @@ public class FruitThrower : NetworkBehaviour {
 	private GameObject[] fruits;
 	private float x = 2.0f;
 	private float lambda = 1.0f;
-	private float unifChance = 0.01f;
+	private float unifChance = 0.005f;
 	// Use this for initialization
 	void Awake () {
 	}
@@ -23,16 +23,17 @@ public class FruitThrower : NetworkBehaviour {
 	}
 
 	void Update() {
-		throwFruits ();
+		ThrowFruits ();
 	}
 
-	void throwFruits() {
+
+	void ThrowFruits() {
 		// generator function
 		if (Random.Range(0f, 1.0f) < unifChance) {
 //			Debug.Log ("Fruit thrown at " + transform.position);
 			GameObject fruit = fruits [Random.Range (0, fruits.Length)];
 			NetworkServer.Spawn (Instantiate (fruit, transform.position, Quaternion.identity));
-			unifChance *= 0.99f;
+//			unifChance *= 0.99f;
 		}
 //		Vector2 newPosition = (Vector2)transform.position + new Vector2 (1, 0); 
 //		transform.position = newPosition;
