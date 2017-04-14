@@ -1,22 +1,21 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 
-public class FruitThrower : MonoBehaviour {
+public class FruitThrower : NetworkBehaviour {
 
 	[SerializeField]
 	private GameObject[] fruits;
 	private float x = 2.0f;
 	private float lambda = 1.0f;
-	private Rigidbody2D rb;
+	private float unifChance = 0.01f;
 	// Use this for initialization
 	void Awake () {
-		rb = GetComponent<Rigidbody2D> ();
 	}
 
 	void Start () {
-		throwFruits ();
-		rb.velocity = new Vector2 (100, 0);
+		transform.localPosition = new Vector2 (200, 80);
 	}
 
 	bool inverseExponential(float lambda, float x) {
@@ -29,11 +28,11 @@ public class FruitThrower : MonoBehaviour {
 
 	void throwFruits() {
 		// generator function
-		if (inverseExponential (lambda, x)) {
+		if (Random.Range(0f, 1.0f) < unifChance) {
 //			Debug.Log ("Fruit thrown at " + transform.position);
 			GameObject fruit = fruits [Random.Range (0, fruits.Length)];
-			Instantiate (fruit, transform.position, Quaternion.identity);
-			x += 0.01f;
+			NetworkServer.Spawn (Instantiate (fruit, transform.position, Quaternion.identity));
+			unifChance *= 0.99f;
 		}
 //		Vector2 newPosition = (Vector2)transform.position + new Vector2 (1, 0); 
 //		transform.position = newPosition;

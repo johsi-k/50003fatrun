@@ -66,6 +66,9 @@ TagManager:
   - name: Tiles
     uniqueID: 2815274891
     locked: 0
+  - name: Food
+    uniqueID: 2560946281
+    locked: 0
   - name: Units
     uniqueID: 2568311123
     locked: 0

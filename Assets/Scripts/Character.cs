@@ -8,7 +8,6 @@ using UnityEngine.Networking;
 public class Character : NetworkBehaviour {
 
 
-	[SyncVar]
 	private float health = 1f;
 	private float healthDropRate = 0.01f;
 	private Image healthContent;
@@ -38,6 +37,16 @@ public class Character : NetworkBehaviour {
 	private UnityEngine.Object isAnimSpeedControlledLock = new UnityEngine.Object ();
 	private UnityEngine.Object isScaleControlledLock = new UnityEngine.Object ();
 
+	//Syncvars
+	[SyncVar]
+	private float moveSpeedSync;
+	[SyncVar]
+	private float jumpForceSync;
+	[SyncVar]
+	private float animSpeedSync;
+	[SyncVar]
+	private float scaleSync;
+
 	private Rigidbody2D rb;
 	private Collider2D collider;
 	private Animator anim;
@@ -46,6 +55,7 @@ public class Character : NetworkBehaviour {
 
 	public float moveSpeed;
 	public float jumpForce;
+	private bool isJump;
 
 	private static int runStateHash = Animator.StringToHash ("CatRun");
 	private static int jumpStateHash = Animator.StringToHash ("CatJump");
@@ -81,6 +91,12 @@ public class Character : NetworkBehaviour {
 
         DontDestroyOnLoad(gameObject);
 
+		// prevents character from experiencing rotation due to gravity
+		rb.freezeRotation = true;
+
+		// used to nudge the character a little if it gets stuck for unknown reasons
+		lastPosition = (Vector2) transform.position - Vector2.left;
+
 		if (!isLocalPlayer) {
 			return;
 		}
@@ -95,32 +111,28 @@ public class Character : NetworkBehaviour {
 		Camera.main.GetComponent<CameraTracker>().setTarget(gameObject.transform);
 		GameObject.Find ("Background").GetComponent<CameraTracker> ().setTarget (gameObject.transform);
 
-		// prevents character from experiencing rotation due to gravity
-		rb.freezeRotation = true;
-
-		// used to nudge the character a little if it gets stuck for unknown reasons
-		lastPosition = (Vector2) transform.position - Vector2.left;
 	}
 
 	// Reduces the fat level based on the fat drop rate
-	bool UpdateFatLevel() {
-		// returns true if fat level > 0
+	void ReduceFatLevel() {
 		if (fatLevel > 0) {
 			fatLevel -= Time.deltaTime * fatDropRate;
-			return true;
-		} else {
-			return false;
-		}
+		} 
 	}
 
-	// Reduces the health based on the health drop rate
-	bool UpdateHealth() {
-		// returns true if health > 0
-		if (health > 0) {
-			health -= Time.deltaTime * healthDropRate;
+	// returns true if fat level > 0
+	bool HasFatLevelChanged() {
+		if (fatLevel > 0) {
 			return true;
 		}
 		return false;
+	}
+
+	// Reduces the health based on the health drop rate
+	void ReduceHealth() {
+		if (health > 0) {
+			health -= Time.deltaTime * healthDropRate;
+		}
 	}
 
 //	int GetSizeIndexFromLevel() {
@@ -167,12 +179,6 @@ public class Character : NetworkBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-		// Reduce fats
-		bool fatLevelChanged = UpdateFatLevel ();
-
-		// Reduce health
-		bool healthLevelChanged = UpdateHealth ();
-
 //		int sizeIndex = GetSizeIndexFromLevel ();
 //		Size newSize = sizes [sizeIndex];
 //		bool hasChangedSize = newSize != currentSize;
@@ -181,84 +187,102 @@ public class Character : NetworkBehaviour {
 //			currentSize = newSize;
 //			UpdateStatsWithSize ();
 //		}
+		if (isServer) {
+			ReduceFatLevel ();
 
-		if (fatLevelChanged) {
-			// lock so that if food is eaten, moveSpeed will not be changed by this
-			lock (isMoveSpeedControlledLock) {
-				if (!isMoveSpeedControlled) // if ms not controlled by food
-				moveSpeed = Mathf.Lerp (30f, 5f, fatLevel);
-			}
-			// same logic
-			lock (isJumpForceControlledLock) {
-				if (!isJumpForceControlled) // if jf not controlled by food
-				jumpForce = Mathf.Lerp (50f, 15f, fatLevel);
-			}
-			lock (isAnimSpeedControlledLock) {
-				if (!isAnimSpeedControlled) // if as not controlled by food
-				anim.speed = Mathf.Lerp (2.0f, 0.5f, fatLevel);
-			}
-			lock (isScaleControlledLock) {
-				if (!isScaleControlled) {// if as not controlled by food
-					float scale = Mathf.Lerp (1.0f, 3f, fatLevel);
-					transform.localScale = new Vector3 (scale, transform.localScale.y, transform.localScale.z);
+			if (HasFatLevelChanged ()) {
+				// lock so that if food is eaten, moveSpeed will not be changed by this
+				lock (isMoveSpeedControlledLock) {
+					if (!isMoveSpeedControlled) // if ms not controlled by food
+				moveSpeedSync = Mathf.Lerp (30f, 5f, fatLevel);
 				}
+				// same logic
+				lock (isJumpForceControlledLock) {
+					if (!isJumpForceControlled) // if jf not controlled by food
+				jumpForceSync = Mathf.Lerp (50f, 15f, fatLevel);
+				}
+				lock (isAnimSpeedControlledLock) {
+					if (!isAnimSpeedControlled) // if as not controlled by food
+				animSpeedSync = Mathf.Lerp (2.0f, 0.5f, fatLevel);
+				}
+				lock (isScaleControlledLock) {
+					if (!isScaleControlled) {// if as not controlled by food
+						scaleSync = Mathf.Lerp (1.0f, 3f, fatLevel);
+					}
+				}
+				// rb.AddForce (new Vector2 (0, -2), ForceMode2D.Impulse);
 			}
-			rb.AddForce (new Vector2 (0, -2), ForceMode2D.Impulse);
 		}
 
-		float ms = 1f;
-		rb.velocity = new Vector2 (ms, rb.velocity.y);
+	
+		moveSpeed = moveSpeedSync;
+		jumpForce = jumpForceSync;
+		anim.speed = animSpeedSync;
+		transform.localScale = new Vector3 (scaleSync, transform.localScale.y, transform.localScale.z);
+
+		float ms = moveSpeed;
+		float msy;
+		if (isJump) {
+			msy = jumpForce;
+			isJump = false;
+		} else {
+			msy = rb.velocity.y;
+		}
+		rb.velocity = new Vector2 (ms, msy);
+			
 
 		// ONLY THE REST ARE LOCAL
-		if (!isLocalPlayer) {
-			return;
-		}
-		// Change fat bar content and text
-		fatContent.fillAmount = fatLevel;
-		fatText.text = (int)(100 * fatLevel) + "%";
+		if (isLocalPlayer) {
+			ReduceHealth ();
 
-		// Change health bar content and text
-		healthContent.fillAmount = health;
-		healthText.text = (int)(100 * health) + "%";
+			// Change fat bar content and text
+			fatContent.fillAmount = fatLevel;
+			fatText.text = (int)(100 * fatLevel) + "%";
 
-		//	Debug.DrawLine(transform.position, new Vector2(0, collider.bounds.extents.y), Color.green);
-		grounded = collider.Raycast(Vector2.down, rchresults, (float) (collider.bounds.extents.y + 0.3)) > 0;
-		sideGrounded = collider.Raycast (Vector2.right + Vector2.down, rchresults, (float)(collider.bounds.extents.y + 1.0)) > 0;
-		grounded = grounded || sideGrounded;
+			// Change health bar content and text
+			healthContent.fillAmount = health;
+			healthText.text = (int)(100 * health) + "%";
 
-			
-		if (!grounded) {
-			notGroundedCount++;
-		} else {
-			notGroundedCount = 0;
-		}
+			//	Debug.DrawLine(transform.position, new Vector2(0, collider.bounds.extents.y), Color.green);
+			grounded = collider.Raycast (Vector2.down, rchresults, (float)(collider.bounds.extents.y + 0.3)) > 0;
+			sideGrounded = collider.Raycast (Vector2.right + Vector2.down, rchresults, (float)(collider.bounds.extents.y + 1.0)) > 0;
+			grounded = grounded || sideGrounded;
 
-
-		/////////////////
-		// Player Control
-		/////////////////
-
-		// state machine for animation
-		int currentState = anim.GetCurrentAnimatorStateInfo (0).shortNameHash;
-		if (currentState == runStateHash) {
-			if (Input.GetKeyDown (KeyCode.Space) || (Input.touchCount > 0 && Input.GetTouch (0).phase == TouchPhase.Began)) {
-				Jump (ms, jumpForce);
-				CmdJump (ms, jumpForce);
+				
+			if (!grounded) {
+				notGroundedCount++;
+			} else {
+				notGroundedCount = 0;
 			}
-			// To avoid state change when size changes (Hack)
-			// if (!hasChangedSize)
-			else if (notGroundedCount >= 10) {
-				ChangeJump (true);
-				CmdChangeJump (true);
+
+
+			/////////////////
+			// Player Control
+			/////////////////
+
+			// state machine for animation
+			int currentState = anim.GetCurrentAnimatorStateInfo (0).shortNameHash;
+			if (currentState == runStateHash) {
+				if (Input.GetKeyDown (KeyCode.Space) || (Input.touchCount > 0 && Input.GetTouch (0).phase == TouchPhase.Began)) {
+					CmdJump();
+					ChangeJump (true);
+					CmdChangeJump (true);
+				}
+				// To avoid state change when size changes (Hack)
+				// if (!hasChangedSize)
+				else if (notGroundedCount >= 10) {
+					ChangeJump (true);
+					CmdChangeJump (true);
+				}
+			} else if (currentState == jumpStateHash) {
+				ChangeJump (!grounded);
+				CmdChangeJump (!grounded);
+				ChangeFall (rb.velocity.y <= 0);
+				CmdChangeFall (rb.velocity.y <= 0);
+			} else if (currentState == fallStateHash) {
+				ChangeJump (!grounded);
+				CmdChangeJump (!grounded);
 			}
-		} else if (currentState == jumpStateHash) {
-			ChangeJump (!grounded);
-			CmdChangeJump (!grounded);
-			ChangeFall (rb.velocity.y <= 0);
-			CmdChangeFall (rb.velocity.y <= 0);
-		} else if (currentState == fallStateHash) {
-			ChangeJump (!grounded);
-			CmdChangeJump (!grounded);
 		}
 	}
 
@@ -296,28 +320,19 @@ public class Character : NetworkBehaviour {
 			return;
 		ChangeJump(isJump);
 	}
-
-
-	// JUMP AND CHANGE TO JUMP ANIMATION
-	void Jump(float ms, float jumpForce) {
-		rb.velocity = new Vector2 (ms, jumpForce);
-		ChangeJump (true);
-	}
-
+		
 	[Command]
-	void CmdJump(float ms, float jumpForce) {
-		RpcJump(ms, jumpForce);
+	void CmdJump() {
+		RpcJump ();
 	}
 
 	[ClientRpc]
-	void RpcJump(float ms, float jumpForce) {
-		if (isLocalPlayer)
-			return;
-		Jump (ms, jumpForce);
+	void RpcJump() {
+		isJump = true;
 	}
 		
-
-	void AddFats(float fats) {
+	[Command]
+	void CmdAddFats(float fats) {
 		// need synchronity
 		fatLevel += fats;
 		if (fatLevel > 1.0f) {
@@ -333,27 +348,32 @@ public class Character : NetworkBehaviour {
 		}
 	}
 
+	[Command]
+	void CmdSpeedUpCoroutine(float seconds) {
+		StartCoroutine(SpeedUpCoroutine(seconds));
+	}
+		
 	IEnumerator SpeedUpCoroutine(float seconds) {
 		float prevAnimSpeed;
 		float prevMoveSpeed;
 		lock(isAnimSpeedControlledLock) {
 			isAnimSpeedControlled = true;
-			prevAnimSpeed = anim.speed;
-			anim.speed = 4.0f;
+			prevAnimSpeed = animSpeedSync;
+			animSpeedSync = 4.0f;
 		}
 		lock(isMoveSpeedControlledLock) {
 			isMoveSpeedControlled = true;
-			prevMoveSpeed = moveSpeed;
-			moveSpeed = 50.0f;
+			prevMoveSpeed = moveSpeedSync;
+			moveSpeedSync = 50.0f;
 		}
 		yield return new WaitForSecondsRealtime (seconds);
 		lock (isAnimSpeedControlledLock) {
 			isAnimSpeedControlled = false;
-			anim.speed = prevAnimSpeed;
+			animSpeedSync = prevAnimSpeed;
 		}
 		lock (isMoveSpeedControlledLock) {
 			isMoveSpeedControlled = false;
-			moveSpeed = prevMoveSpeed;
+			moveSpeedSync = prevMoveSpeed;
 		}
 		lock (isBoostedLock) {
 			Debug.Log ("Lock gone " + System.DateTime.Now);
@@ -361,18 +381,22 @@ public class Character : NetworkBehaviour {
 		}
 	}
 
+	[Command]
+	void CmdJumpForceCoroutine(float seconds) {
+		StartCoroutine(JumpForceCoroutine(seconds));
+	}
 
 	IEnumerator JumpForceCoroutine(float seconds) {
 		float prevJumpForce;
 		lock(isJumpForceControlledLock) {
 			isJumpForceControlled = true;
-			prevJumpForce = jumpForce;
-			jumpForce = 100.0f;
+			prevJumpForce = jumpForceSync;
+			jumpForceSync = 100.0f;
 		}
 		yield return new WaitForSecondsRealtime (seconds);
 		lock (isJumpForceControlledLock) {
 			isJumpForceControlled = false;
-			jumpForce = prevJumpForce;
+			jumpForceSync = prevJumpForce;
 		}
 		lock (isBoostedLock) {
 			Debug.Log ("Lock gone " + System.DateTime.Now);
@@ -391,31 +415,35 @@ public class Character : NetworkBehaviour {
 		// fruits
 		if (other.tag.Contains ("Fruit")) {
 			// add health and fats
-			AddHealth(0.2f);
-			AddFats (0.05f);
-			PlusPopUpController.createHealthPlusPopUp ("+20% hp");
-			PlusPopUpController.createFatsPlusPopUp ("+5% fats");
+			AddHealth (0.2f);
+			CmdAddFats (0.05f);
+			if (isLocalPlayer) {
+				PlusPopUpController.createHealthPlusPopUp ("+20% hp");
+				PlusPopUpController.createFatsPlusPopUp ("+5% fats");
+			}
 			Destroy (other.gameObject);
 
-			if (other.tag.Contains("Cherry")) {
+			if (other.tag.Contains ("Cherry")) {
 				// gain lock on state
 				lock (isBoostedLock) {
 					if (!isBoosted) {
-						isBoosted = true;
-						BoostPopUpController.createBoostPopUp("FOOD BURST!");
-						Debug.Log ("Speed up! " + System.DateTime.Now );
-						StartCoroutine(SpeedUpCoroutine(5.0f));
+						if (isLocalPlayer) {
+							BoostPopUpController.createBoostPopUp ("FOOD BURST!");
+							CmdSpeedUpCoroutine (5.0f);
+						}
+						isBoosted = true;							
 					}
 				}
 			}
-			if (other.tag.Contains("Apple")) {
+			if (other.tag.Contains ("Apple")) {
 				// gain lock on state
 				lock (isBoostedLock) {
 					if (!isBoosted) {
 						isBoosted = true;
-						BoostPopUpController.createBoostPopUp("SUPER JUMP!");
-						Debug.Log ("Jump!" + System.DateTime.Now);
-						StartCoroutine(JumpForceCoroutine(5.0f));
+						if (isLocalPlayer) {
+							BoostPopUpController.createBoostPopUp ("SUPER JUMP!");
+						CmdJumpForceCoroutine (5.0f);
+						}
 					}
 				}
 			}
