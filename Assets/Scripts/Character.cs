@@ -84,6 +84,7 @@ public class Character : NetworkBehaviour {
 		rchresults = new RaycastHit2D[3];
 		BoostPopUpController.Initialize ();
 		PlusPopUpController.Initialize ();
+		IsWinPopUpController.Initialize ();
 	}
 
 	// Use this for initialization
@@ -419,7 +420,26 @@ public class Character : NetworkBehaviour {
 			OnFruitContact (other);
 		} else if (other.tag.Contains ("JunkFood")) {
 			OnJunkFoodContact (other);
+		} else if (other.tag.Contains ("Endpoint")) {
+			CmdCheckWinCondition ();
 		}
+	}
+
+	[Command]
+	void CmdCheckWinCondition() {
+		GameObject winObject = GameObject.Find ("CheckWinObject");
+		bool isWin = winObject.GetComponent<WinConditionCheck> ().CheckIsWin();
+		RpcIsWinMessage (isWin);
+	}
+
+	[ClientRpc]
+	void RpcIsWinMessage(bool isWin) {
+		print ("APPLE");
+		if (isWin)
+			IsWinPopUpController.createIsWinPopUp ();
+		else
+			IsWinPopUpController.createIsLostPopUp ();
+		
 	}
 
 	void OnJunkFoodContact(Collider2D other) {

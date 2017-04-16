@@ -24,7 +24,7 @@ GameObject:
   - component: {fileID: 50192867596347554}
   - component: {fileID: 61604469170633990}
   - component: {fileID: 114766573108305014}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: Hamburger
   m_TagString: JunkFood - Hamburger
   m_Icon: {fileID: 0}

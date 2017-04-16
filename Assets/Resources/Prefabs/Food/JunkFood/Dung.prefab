@@ -24,7 +24,7 @@ GameObject:
   - component: {fileID: 50984628626567592}
   - component: {fileID: 61517651753762602}
   - component: {fileID: 114417782547963098}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: Dung
   m_TagString: JunkFood - Dung
   m_Icon: {fileID: 0}

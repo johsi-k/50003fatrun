@@ -24,7 +24,7 @@ GameObject:
   - component: {fileID: 50954778931254632}
   - component: {fileID: 61258323116060418}
   - component: {fileID: 114812271524630482}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: Fries
   m_TagString: JunkFood - Fries
   m_Icon: {fileID: 0}
