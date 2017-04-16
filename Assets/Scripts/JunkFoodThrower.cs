@@ -27,7 +27,6 @@ public class JunkFoodThrower : NetworkBehaviour {
 	}
 		
 	void ThrowJunkFood() {
-		Debug.Log ("Trying to throw");
 		// generator function
 		if (Random.Range(0f, 1.0f) < unifChance) {
 			GameObject jf = junkFood [Random.Range (0, junkFood.Length)];
@@ -41,7 +40,6 @@ public class JunkFoodThrower : NetworkBehaviour {
 	void OnTriggerEnter2D(Collider2D other) {
 		if (other.gameObject.CompareTag("Endpoint")) {
 			Destroy(gameObject);
-			Debug.Log("Destroyed");
 		}
 	}
 }

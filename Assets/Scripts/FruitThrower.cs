@@ -42,7 +42,6 @@ public class FruitThrower : NetworkBehaviour {
 	void OnTriggerEnter2D(Collider2D other) {
 		if (other.gameObject.CompareTag("Endpoint")) {
 			Destroy(gameObject);
-			Debug.Log("Destroyed");
 		}
 	}
 }
