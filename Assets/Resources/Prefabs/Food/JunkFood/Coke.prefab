@@ -24,7 +24,7 @@ GameObject:
   - component: {fileID: 50982717563612830}
   - component: {fileID: 61762568920272472}
   - component: {fileID: 114593101941008210}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: Coke
   m_TagString: JunkFood - Coke
   m_Icon: {fileID: 0}

@@ -24,7 +24,7 @@ GameObject:
   - component: {fileID: 50603055937508464}
   - component: {fileID: 61497097895407614}
   - component: {fileID: 114456507636892298}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: HotDog
   m_TagString: JunkFood - HotDog
   m_Icon: {fileID: 0}

@@ -64,7 +64,7 @@ GameObject:
   - component: {fileID: 114552345638417570}
   - component: {fileID: 114540618395926878}
   - component: {fileID: 114007629838015354}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: CatCharacter
   m_TagString: Player
   m_Icon: {fileID: 0}

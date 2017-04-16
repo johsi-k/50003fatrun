@@ -24,7 +24,7 @@ GameObject:
   - component: {fileID: 50501508495991962}
   - component: {fileID: 61703463319330422}
   - component: {fileID: 114011955153260704}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: Drumstick
   m_TagString: JunkFood - Drumstick
   m_Icon: {fileID: 0}

@@ -14,7 +14,6 @@ public class BoostPopUpController : MonoBehaviour {
 			canvas = GameObject.Find ("Canvas");
 			boostPopUp = Resources.Load ("Prefabs/Others/BoostPopUp");
 			boostPopUp2 = Resources.Load ("Prefabs/Others/BoostPopUp2");
-			Debug.Log (boostPopUp);
 		}
 	}
 
