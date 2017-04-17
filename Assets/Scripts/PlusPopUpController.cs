@@ -23,7 +23,7 @@ public class PlusPopUpController : MonoBehaviour {
 
 	public static void Initialize() {
 		if (!canvas) {
-			canvas = GameObject.Find ("Canvas");
+			canvas = GameObject.Find ("PopupCanvas");
 			plusPopUp = Resources.Load<PlusPopUpParent> ("Prefabs/Others/PlusPopUpParent");
 		}
 	}

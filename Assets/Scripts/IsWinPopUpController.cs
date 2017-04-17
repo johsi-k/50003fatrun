@@ -11,7 +11,7 @@ public class IsWinPopUpController : MonoBehaviour {
 
 	public static void Initialize() {
 		if (!canvas) {
-			canvas = GameObject.Find ("Canvas");
+			canvas = GameObject.Find ("PopupCanvas");
 			isWinPopUp = Resources.Load ("Prefabs/Others/IsWinPopUp");
 			isLostPopUp = Resources.Load ("Prefabs/Others/IsLostPopUp");
 		}
