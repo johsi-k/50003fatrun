@@ -23,6 +23,7 @@ public class runLobbyManager : NetworkLobbyManager {
     public List<runLobbyPlayer> lobbyPlayers = new List<runLobbyPlayer>();
 
     public int expectedPlayers = 99999;
+    public int arrivedPlayer = 0;
 
     public enum NetworkState
     {
@@ -65,7 +66,7 @@ public class runLobbyManager : NetworkLobbyManager {
     }
 
 
-    public void onCreateClicked() // bound to button which creates a match for lobby to be visible; initiated by host
+    public void onCreateClicked() // bound to button which creates a match for lobby to be visible; initiated by server
     {
         this.StartMatchMaker();
         partyID = RandomString(4);
@@ -162,6 +163,8 @@ public class runLobbyManager : NetworkLobbyManager {
 
     }
 
+    
+
     public override void OnLobbyClientEnter()
     {
         Debug.Log("entering lobby");
@@ -173,7 +176,7 @@ public class runLobbyManager : NetworkLobbyManager {
     {
         base.OnLobbyClientExit();
     }
-
+    
     public override void OnLobbyClientConnect(NetworkConnection conn)
     {
         base.OnLobbyClientConnect(conn);
@@ -220,7 +223,7 @@ public class runLobbyManager : NetworkLobbyManager {
         //}
     }
 
-
+    // default implementation calls ServerChangeScene with the PlayScene
     public override void OnLobbyServerPlayersReady()
     {
         expectedPlayers = lobbyPlayers.Count;
@@ -238,83 +241,26 @@ public class runLobbyManager : NetworkLobbyManager {
 
     }
 
+ 
 
+    // default implementation creates a new player object from playerPrefab
     public override void OnServerAddPlayer(NetworkConnection conn, short playerControllerId)
     {
-        Debug.Log(conn.ToString());
-        networkConnectionList.Add(conn);
-
-        //if (SceneManager.GetActiveScene().name == "Game")
-        //{
-        //    Vector3 spawn = GameObject.FindGameObjectWithTag("SpawnPoint").transform.position;
-        //    GameObject gamePlayerInstance = Instantiate(gamePlayerPrefab, spawn, Quaternion.identity);
-
-        //    // gamePlayer customisation goes here
-
-
-        //    NetworkServer.DestroyPlayersForConnection(conn);
-        //    NetworkServer.AddPlayerForConnection(conn, gamePlayerInstance, 0);
-        //}
-
-
-        
-            //print("length of network connection list: " + networkConnectionList.Count);
+        if(!SceneManager.GetActiveScene().name.Equals("Game"))  
+            // if game scene is not the active scene, proceed with default implementation
+            // otherwise, lobbyPlayer handles the player object generation
+        {
             base.OnServerAddPlayer(conn, playerControllerId);
-            //ownGenerateCharacter(conn);
-        
-
-
-
-    }
-
-
-    public void someFunction() 
-    {
-        //generate everyone
-        if (SceneManager.GetActiveScene().name == "Game" && lobbyPlayers.Count == expectedPlayers)
-        {
-            Debug.Log("NCcount " + networkConnectionList.Count);
-            foreach (runLobbyPlayer player in lobbyPlayers)
-            {
-                Debug.Log("generating own character");
-                //player.generateMe();
-                //if (SceneManager.GetActiveScene().name == "Game")
-                {
-                    Vector3 spawn = GameObject.FindGameObjectWithTag("SpawnPoint").transform.position;
-                    GameObject gamePlayerInstance = Instantiate(gamePlayerPrefab, spawn, Quaternion.identity);
-
-                    // gamePlayer customisation goes here
-
-
-                    NetworkServer.DestroyPlayersForConnection(player.connectionToClient);
-                    NetworkServer.AddPlayerForConnection(player.connectionToClient, gamePlayerInstance, 0);
-                }
-            }
         }
-    }
-
-
-    public void ownGenerateCharacter(NetworkConnection conn)
-    {
-        Debug.Log("generating character" + conn.ToString());
       
-        if (SceneManager.GetActiveScene().name == "Game")
-        {
-            Vector3 spawn = GameObject.FindGameObjectWithTag("SpawnPoint").transform.position;
-            GameObject gamePlayerInstance = Instantiate(gamePlayerPrefab, spawn, Quaternion.identity);
-
-            // gamePlayer customisation goes here
-
-
-            NetworkServer.DestroyPlayersForConnection(conn);
-            NetworkServer.AddPlayerForConnection(conn, gamePlayerInstance, 0);
-        }
+  
     }
 
     public void OnMatchDestroy(bool success, string extendedInfo)
     {
-        
+
     }
+
 
  
     public void OnQuit()

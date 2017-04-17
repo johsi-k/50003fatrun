@@ -9739,7 +9739,8 @@ MonoBehaviour:
   m_ScriptCRCCheck: 1
   m_MaxDelay: 0.01
   m_LogLevel: 2
-  m_PlayerPrefab: {fileID: 0}
+  m_PlayerPrefab: {fileID: 1894664540505690, guid: 1d4fdd2a156e34906bb84c5c67159724,
+    type: 2}
   m_AutoCreatePlayer: 1
   m_PlayerSpawnMethod: 0
   m_OfflineScene: ui2
@@ -9804,8 +9805,7 @@ MonoBehaviour:
   m_MinPlayers: 0
   m_LobbyPlayerPrefab: {fileID: 114894783429227294, guid: d47ccba49bf9c0c41a0720894904cd47,
     type: 2}
-  m_GamePlayerPrefab: {fileID: 1540291559501224, guid: 5311702063b45da419960ef00ee7db8b,
-    type: 2}
+  m_GamePlayerPrefab: {fileID: 0}
   m_LobbyScene: ui2
   m_PlayScene: Game
   lobbySlots: []
@@ -9813,6 +9813,7 @@ MonoBehaviour:
   partyID: 
   lobbyPlayers: []
   expectedPlayers: 99999
+  arrivedPlayer: 0
 --- !u!4 &2020803712
 Transform:
   m_ObjectHideFlags: 0

@@ -663,7 +663,9 @@ MonoBehaviour:
   - {fileID: 2800000, guid: ec86dec50c97af84ab1cdb7e06a48e5c, type: 3}
   - {fileID: 2800000, guid: 09608aa65affb7e4180f77619c0bf9e7, type: 3}
   isThisLocalPlayer: 0
-  prefab: {fileID: 1894664540505690, guid: 1d4fdd2a156e34906bb84c5c67159724, type: 2}
+  prefab1: {fileID: 1894664540505690, guid: 1d4fdd2a156e34906bb84c5c67159724, type: 2}
+  prefab2: {fileID: 1894664540505690, guid: 1d4fdd2a156e34906bb84c5c67159724, type: 2}
+  prefab3: {fileID: 1894664540505690, guid: 1d4fdd2a156e34906bb84c5c67159724, type: 2}
   thisPlayerReady: 0
 --- !u!222 &222090830984329312
 CanvasRenderer:

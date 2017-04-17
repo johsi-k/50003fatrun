@@ -17,7 +17,9 @@ public class runLobbyPlayer : NetworkLobbyPlayer {
     static Color OrangeColor = new Color(251.0f / 255.0f, 176 / 255.0f, 59.0f / 255.0f, 1.0f);
 
     public bool isThisLocalPlayer;
-    public GameObject prefab;
+    public GameObject prefab1;
+    public GameObject prefab2;
+    public GameObject prefab3;
 
     [SyncVar]
     int sprite_selected;
@@ -62,8 +64,13 @@ public class runLobbyPlayer : NetworkLobbyPlayer {
             //SendNotReadyToBeginMessage();
         }
 
+        // tells each lobbyPlayer object to transform itself into a gamePlayer object when game scene is active scene
+        if (SceneManager.GetActiveScene().name == "Game")
+        {
+            CmdownGenerateCharacter();
+        }
 
-        
+
     }
 
     void SetupSelf() {
@@ -86,17 +93,29 @@ public class runLobbyPlayer : NetworkLobbyPlayer {
     [Command]
     void CmdownGenerateCharacter()
     {
-        if (SceneManager.GetActiveScene().name == "Game" && isLocalPlayer)
+        //if (SceneManager.GetActiveScene().name == "Game")
             Debug.Log("generating character " + connectionToClient.ToString());
         {
             Vector3 spawn = GameObject.FindGameObjectWithTag("SpawnPoint").transform.position;
-            GameObject gamePlayerInstance = Instantiate(prefab, spawn, Quaternion.identity);
+            GameObject gamePlayerInstance;// = Instantiate(prefab, spawn, Quaternion.identity);
+            if(sprite_selected == 0)
+            {
+                gamePlayerInstance = Instantiate(prefab1, spawn, Quaternion.identity);
+            } else if(sprite_selected == 1)
+            {
+                gamePlayerInstance = Instantiate(prefab2, spawn, Quaternion.identity);
+            } else
+            {
+                gamePlayerInstance = Instantiate(prefab3, spawn, Quaternion.identity);
+            }
 
             // gamePlayer customisation goes here
 
-
-            NetworkServer.DestroyPlayersForConnection(connectionToClient);
-            NetworkServer.AddPlayerForConnection(connectionToClient, gamePlayerInstance, 0);
+            //NetworkServer.DestroyPlayersForConnection(connectionToClient);
+            // connectionToClient: connection that this lobbyPlayer has to the client
+            NetworkServer.ReplacePlayerForConnection(connectionToClient, gamePlayerInstance, playerControllerId); // replaces the reference
+            Destroy(gameObject); // destroys the original lobbyPlayer object 
+            
         }
     }
 
@@ -119,7 +138,7 @@ public class runLobbyPlayer : NetworkLobbyPlayer {
         // once localPlayer is set up, all other lobbyplayers are
         // also set up, hence the canvas is ready for viewing
 
-        (runLobbyManager.singleton as runLobbyManager).someFunction();
+        // (runLobbyManager.singleton as runLobbyManager).someFunction();
         
 
     }
@@ -134,21 +153,6 @@ public class runLobbyPlayer : NetworkLobbyPlayer {
     }
 
 
-
-    void RemoveSelf()
-    {
-
-    }
-
-    void RemoveLocal()
-    {
-
-    }
-
-    void RemoveOther()
-    {
-
-    }
 
     public override void OnClientEnterLobby()
     {
