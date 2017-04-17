@@ -31,6 +31,7 @@ public class runLobbyPlayer : NetworkLobbyPlayer {
     void Start()
     {
         //DontDestroyOnLoad(gameObject);
+        gameObject.GetComponent<RectTransform>().localScale = new Vector3(1,1,1);
 
         SetupSelf();
         isThisLocalPlayer = isLocalPlayer;

@@ -61,6 +61,8 @@ public class Character : NetworkBehaviour {
     // if character has shield, will not eat fast food
     private bool isShield = false;
 
+    private bool isEnd = false;
+
     //Syncvars
     [SyncVar]
 	private float moveSpeedSync;
@@ -637,7 +639,7 @@ public class Character : NetworkBehaviour {
     {
         // Set up bullet on server
         float startTime = Time.time;
-        float shitInterval = 0.35f;
+        float shitInterval = 0.75f;
         while (Time.time - startTime < seconds)
         {
             GameObject bullet = Instantiate(shitBullet, new Vector2(transform.position.x - 5, transform.position.y + 5), Quaternion.identity) as GameObject;
@@ -678,7 +680,12 @@ public class Character : NetworkBehaviour {
 		} else if (other.tag.Contains ("JunkFood")) {
 			OnJunkFoodContact (other);
 		} else if (other.tag.Contains ("Endpoint")) {
-			CmdCheckWinCondition ();
+            if (!isEnd)
+            {
+                CmdCheckWinCondition();
+                isEnd = true;
+            }
+			
         }
 	}
 
