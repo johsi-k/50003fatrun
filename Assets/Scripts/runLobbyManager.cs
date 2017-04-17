@@ -6,7 +6,7 @@ using UnityEngine.Networking.Match;
 using UnityEngine.UI;
 using System.Linq;
 using UnityEngine.SceneManagement;
-//using UnityEngine.WSA;
+
 
 
 public class runLobbyManager : NetworkLobbyManager {
@@ -17,9 +17,12 @@ public class runLobbyManager : NetworkLobbyManager {
     int counter = 1;
     private static System.Random random = new System.Random();
     public string partyID;  // for match CREATION
+    public List<NetworkConnection> networkConnectionList = new List<NetworkConnection>();
 
     // tracks if lobby players are ready on the client and saves local player state
     public List<runLobbyPlayer> lobbyPlayers = new List<runLobbyPlayer>();
+
+    public int expectedPlayers = 99999;
 
     public enum NetworkState
     {
@@ -56,7 +59,7 @@ public class runLobbyManager : NetworkLobbyManager {
 
     public static string RandomString(int length)
     {
-        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789";
         return new string(Enumerable.Repeat(chars, length)
           .Select(s => s[random.Next(s.Length)]).ToArray());
     }
@@ -220,6 +223,7 @@ public class runLobbyManager : NetworkLobbyManager {
 
     public override void OnLobbyServerPlayersReady()
     {
+        expectedPlayers = lobbyPlayers.Count;
         foreach(runLobbyPlayer player in lobbyPlayers)
         {
             try
@@ -237,12 +241,71 @@ public class runLobbyManager : NetworkLobbyManager {
 
     public override void OnServerAddPlayer(NetworkConnection conn, short playerControllerId)
     {
-        base.OnServerAddPlayer(conn, playerControllerId);
+        Debug.Log(conn.ToString());
+        networkConnectionList.Add(conn);
+
+        //if (SceneManager.GetActiveScene().name == "Game")
+        //{
+        //    Vector3 spawn = GameObject.FindGameObjectWithTag("SpawnPoint").transform.position;
+        //    GameObject gamePlayerInstance = Instantiate(gamePlayerPrefab, spawn, Quaternion.identity);
+
+        //    // gamePlayer customisation goes here
+
+
+        //    NetworkServer.DestroyPlayersForConnection(conn);
+        //    NetworkServer.AddPlayerForConnection(conn, gamePlayerInstance, 0);
+        //}
+
+
+        
+            //print("length of network connection list: " + networkConnectionList.Count);
+            base.OnServerAddPlayer(conn, playerControllerId);
+            //ownGenerateCharacter(conn);
+        
+
+
+
+    }
+
+
+    public void someFunction() 
+    {
+        //generate everyone
+        if (SceneManager.GetActiveScene().name == "Game" && lobbyPlayers.Count == expectedPlayers)
+        {
+            Debug.Log("NCcount " + networkConnectionList.Count);
+            foreach (runLobbyPlayer player in lobbyPlayers)
+            {
+                Debug.Log("generating own character");
+                //player.generateMe();
+                //if (SceneManager.GetActiveScene().name == "Game")
+                {
+                    Vector3 spawn = GameObject.FindGameObjectWithTag("SpawnPoint").transform.position;
+                    GameObject gamePlayerInstance = Instantiate(gamePlayerPrefab, spawn, Quaternion.identity);
+
+                    // gamePlayer customisation goes here
+
+
+                    NetworkServer.DestroyPlayersForConnection(player.connectionToClient);
+                    NetworkServer.AddPlayerForConnection(player.connectionToClient, gamePlayerInstance, 0);
+                }
+            }
+        }
+    }
+
+
+    public void ownGenerateCharacter(NetworkConnection conn)
+    {
+        Debug.Log("generating character" + conn.ToString());
+      
         if (SceneManager.GetActiveScene().name == "Game")
         {
             Vector3 spawn = GameObject.FindGameObjectWithTag("SpawnPoint").transform.position;
             GameObject gamePlayerInstance = Instantiate(gamePlayerPrefab, spawn, Quaternion.identity);
+
             // gamePlayer customisation goes here
+
+
             NetworkServer.DestroyPlayersForConnection(conn);
             NetworkServer.AddPlayerForConnection(conn, gamePlayerInstance, 0);
         }
@@ -250,10 +313,10 @@ public class runLobbyManager : NetworkLobbyManager {
 
     public void OnMatchDestroy(bool success, string extendedInfo)
     {
-
+        
     }
 
-
+ 
     public void OnQuit()
     {
         foreach (runLobbyPlayer player in lobbyPlayers)

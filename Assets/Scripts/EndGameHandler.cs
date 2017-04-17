@@ -25,7 +25,6 @@ public class EndGameHandler : MonoBehaviour {
     {
         Debug.Log("disconnect and return to main");
         ((runLobbyManager.singleton) as runLobbyManager).StopHost();
-        //((runLobbyManager.singleton) as runLobbyManager).OnQuit();
     }
 
 }

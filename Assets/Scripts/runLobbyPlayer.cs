@@ -78,19 +78,49 @@ public class runLobbyPlayer : NetworkLobbyPlayer {
         }
     }
 
+    public void generateMe()
+    {
+        CmdownGenerateCharacter();
+    }
+
+    [Command]
+    void CmdownGenerateCharacter()
+    {
+        if (SceneManager.GetActiveScene().name == "Game" && isLocalPlayer)
+            Debug.Log("generating character " + connectionToClient.ToString());
+        {
+            Vector3 spawn = GameObject.FindGameObjectWithTag("SpawnPoint").transform.position;
+            GameObject gamePlayerInstance = Instantiate(prefab, spawn, Quaternion.identity);
+
+            // gamePlayer customisation goes here
+
+
+            NetworkServer.DestroyPlayersForConnection(connectionToClient);
+            NetworkServer.AddPlayerForConnection(connectionToClient, gamePlayerInstance, 0);
+        }
+    }
+
     void setupLocal()  // if local player
     {
+        //(runLobbyManager.singleton as runLobbyManager).ownGenerateCharacter(this.connectionToServer);
+        //CmdownGenerateCharacter();
         // makes buttons visible and clickable
         spriteLeft.gameObject.SetActive(true);
         spriteRight.gameObject.SetActive(true);
         readyButton.gameObject.SetActive(true);
 
+
+
         GameObject camera = GameObject.FindGameObjectWithTag("MainCamera");
         camera.GetComponent<Menu>().RandomMatchWaitingRoom();
+
         // throws UI from LoadingCanvas to WaitingRoomCanvas 
         // this is called in setupLocal() because we know that
         // once localPlayer is set up, all other lobbyplayers are
         // also set up, hence the canvas is ready for viewing
+
+        (runLobbyManager.singleton as runLobbyManager).someFunction();
+        
 
     }
 
