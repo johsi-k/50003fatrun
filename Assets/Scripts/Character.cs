@@ -101,9 +101,10 @@ public class Character : NetworkBehaviour {
 
     private UnityEngine.Object shitBullet;
     private UnityEngine.Object shield;
+    private UnityEngine.Object tornado;
 
 
-	void Awake () {
+    void Awake () {
 		rb = GetComponent<Rigidbody2D> ();
 		collider = GetComponent<Collider2D> ();
 		anim = GetComponent<Animator> ();
@@ -113,6 +114,7 @@ public class Character : NetworkBehaviour {
 		rchresults = new RaycastHit2D[3];
         shitBullet = Resources.Load("Prefabs/Food/JunkFood/Dung");
         shield = Resources.Load("Prefabs/Others/Shield");
+        tornado = Resources.Load("Prefabs/Others/Tornado");
         BoostPopUpController.Initialize ();
 		PlusPopUpController.Initialize ();
 		IsWinPopUpController.Initialize ();
@@ -327,6 +329,7 @@ public class Character : NetworkBehaviour {
 			if (currentState == runStateHash) {
 				if (Input.GetKeyDown (KeyCode.Space) || (Input.touchCount > 0 && Input.GetTouch (0).phase == TouchPhase.Began)) {
                     audio.PlayOneShot(jumpSound,1F);
+                    CmdTornadoCoroutine(5.0f);
                     CmdJump();
 					ChangeJump (true);
 					CmdChangeJump (true);
@@ -399,7 +402,10 @@ public class Character : NetworkBehaviour {
 		fatLevel += fats;
 		if (fatLevel > 1.0f) {
 			fatLevel = 1.0f;
-		}
+		} else if (fatLevel < 0f)
+        {
+            fatLevel = 0f;
+        }
 	}
 
 	void AddHealth(float hp) {
@@ -567,6 +573,40 @@ public class Character : NetworkBehaviour {
     }
 
     [Command]
+    void CmdTornadoCoroutine(float seconds)
+    {
+        lock (isBoostedLock)
+        {
+            if (!isBoosted)
+            {
+                StartCoroutine(TornadoCoroutine(seconds));
+                isBoosted = true;
+                RpcCreateBoostPopUp("TORNADOES");
+            }
+        }
+
+    }
+
+    IEnumerator TornadoCoroutine(float seconds)
+    {
+        GameObject tor = Instantiate(tornado, Vector2.zero, Quaternion.identity) as GameObject;
+        tor.transform.position = transform.position;
+        tor.GetComponent<TornadoDestroy>().SetFollow(transform, new Vector2(10, 0));
+        GameObject tor2 = Instantiate(tornado, Vector2.zero, Quaternion.identity) as GameObject;
+        tor2.transform.position = transform.position;
+        tor2.GetComponent<TornadoDestroy>().SetFollow(transform, new Vector2(-10, 0));
+        NetworkServer.Spawn(tor);
+        NetworkServer.Spawn(tor2);
+        yield return new WaitForSecondsRealtime(seconds);
+        Destroy(tor);
+        Destroy(tor2);
+        lock (isBoostedLock)
+        {
+            isBoosted = false;
+        }
+    }
+
+    [Command]
     void CmdTeleport()
     {
         RpcTeleport();
@@ -654,6 +694,8 @@ public class Character : NetworkBehaviour {
 
 	[ClientRpc]
 	void RpcIsWinMessage(bool isWin) {
+        if (!isLocalPlayer)
+            return;
 		if (isWin)
 			IsWinPopUpController.createIsWinPopUp ();
 		else
@@ -701,13 +743,40 @@ public class Character : NetworkBehaviour {
 	}
     
 	void OnFruitContact(Collider2D other) {
-		// add health and fats
-		AddHealth (0.2f);
-		CmdAddFats (0.05f);
-		if (isLocalPlayer) {
-			PlusPopUpController.createHealthPlusPopUp ("+25% hp");
-			PlusPopUpController.createFatsPlusPopUp ("+5% fats");
-            audio.PlayOneShot(applecrunch, 1F);
+        // add health and fats
+        if (other.tag.Contains("Grapes"))
+        {
+            AddHealth(0.8f);
+            if (isLocalPlayer)
+            {
+                PlusPopUpController.createHealthPlusPopUp("+80% hp");
+                PlusPopUpController.createFatsPlusPopUp("+0% fats");
+                BoostPopUpController.createBoostPopUp("HEALTHY GRAPES!");
+                audio.PlayOneShot(applecrunch, 1F);
+            }
+        }
+        else if (other.tag.Contains("Banana"))
+        {
+            AddHealth(0.15f);
+            CmdAddFats(-0.8f);
+            if (isLocalPlayer)
+            {
+                PlusPopUpController.createHealthPlusPopUp("+15% hp");
+                PlusPopUpController.createFatsPlusPopUp("-80% fats");
+                BoostPopUpController.createBoostPopUp("TIME TO SLIM DOWN!");
+                audio.PlayOneShot(applecrunch, 1F);
+            }
+        }
+        else
+        {
+            AddHealth(0.2f);
+            CmdAddFats(0.05f);
+            if (isLocalPlayer)
+            {
+                PlusPopUpController.createHealthPlusPopUp("+25% hp");
+                PlusPopUpController.createFatsPlusPopUp("+5% fats");
+                audio.PlayOneShot(applecrunch, 1F);
+            }
         }
 		Destroy (other.gameObject);
 
@@ -731,6 +800,10 @@ public class Character : NetworkBehaviour {
             {
                 audio.PlayOneShot(shieldSound, 1F);
                 CmdShieldCoroutine(5.0f);
+            }
+            else if (other.tag.Contains("Pineapple"))
+            {
+                CmdTornadoCoroutine(5.0f);
             }
         }
     }
