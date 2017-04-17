@@ -422,12 +422,13 @@ public class Character : NetworkBehaviour {
 			OnJunkFoodContact (other);
 		} else if (other.tag.Contains ("Endpoint")) {
 			CmdCheckWinCondition ();
-		}
+        }
 	}
 
 	[Command]
 	void CmdCheckWinCondition() {
 		GameObject winObject = GameObject.Find ("CheckWinObject");
+        Debug.Log("finding win object");
 		bool isWin = winObject.GetComponent<WinConditionCheck> ().CheckIsWin();
 		RpcIsWinMessage (isWin);
 	}
@@ -439,8 +440,10 @@ public class Character : NetworkBehaviour {
 			IsWinPopUpController.createIsWinPopUp ();
 		else
 			IsWinPopUpController.createIsLostPopUp ();
-		
-	}
+        GameObject.Find("Canvas").GetComponent<EndGameHandler>().showEndPanel();  // sets end panel to active
+        // EndGameHandler script is set as component of Canvas rather than ReturntoMenu panel because panel is inactive by default
+
+    }
 
 	void OnJunkFoodContact(Collider2D other) {
 		// add health and fats
