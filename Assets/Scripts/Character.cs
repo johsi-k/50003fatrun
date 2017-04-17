@@ -329,7 +329,6 @@ public class Character : NetworkBehaviour {
 			if (currentState == runStateHash) {
 				if (Input.GetKeyDown (KeyCode.Space) || (Input.touchCount > 0 && Input.GetTouch (0).phase == TouchPhase.Began)) {
                     audio.PlayOneShot(jumpSound,1F);
-                    CmdTornadoCoroutine(5.0f);
                     CmdJump();
 					ChangeJump (true);
 					CmdChangeJump (true);
