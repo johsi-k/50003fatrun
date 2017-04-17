@@ -9,10 +9,17 @@ public class Character : NetworkBehaviour {
 
 
 	private float health = 1f;
-	private float healthDropRate = 0.01f;
+	private float healthDropRate = 0.025f;
 	private Image healthContent;
 	private Text healthText;
-
+    private AudioSource audio;
+    public AudioClip applecrunch;
+    public AudioClip jumpSound;
+    public AudioClip poopSound;
+    public AudioClip shieldSound;
+    public AudioClip deathSound;
+    public AudioClip burpSound;
+    
 	// amount of fats: from 0-1
 	[SyncVar]
 	private float fatLevel = 1f;
@@ -22,6 +29,7 @@ public class Character : NetworkBehaviour {
 	private Text fatText;
 
 	// whether fruit is eaten
+    [SyncVar]
 	private bool isBoosted = false;
 
 	// whether these attributes are altered by fruits
@@ -36,9 +44,25 @@ public class Character : NetworkBehaviour {
 	private UnityEngine.Object isJumpForceControlledLock = new UnityEngine.Object ();
 	private UnityEngine.Object isAnimSpeedControlledLock = new UnityEngine.Object ();
 	private UnityEngine.Object isScaleControlledLock = new UnityEngine.Object ();
+    private UnityEngine.Object deathLock = new UnityEngine.Object();
 
-	//Syncvars
-	[SyncVar]
+    // server side death check
+    [SyncVar]
+    private bool isDead = false;
+    [SyncVar]
+    private bool isDyingAnimation = false;
+    private float deathDuration = 1.5f;
+    private Vector2 deathPosition;
+
+    // if the game is done for the player
+    [SyncVar]
+    private bool isFinished = false;
+    [SyncVar]
+    // if character has shield, will not eat fast food
+    private bool isShield = false;
+
+    //Syncvars
+    [SyncVar]
 	private float moveSpeedSync;
 	[SyncVar]
 	private float jumpForceSync;
@@ -52,6 +76,7 @@ public class Character : NetworkBehaviour {
 	private Animator anim;
 	private UnityEngine.Object boostPopUp;
 	private Canvas canvas;
+    private SpriteRenderer spriteRenderer;
 
 	public float moveSpeed;
 	public float jumpForce;
@@ -74,18 +99,25 @@ public class Character : NetworkBehaviour {
 	[SerializeField]
 	private LayerMask ground;
 
+    private UnityEngine.Object shitBullet;
+    private UnityEngine.Object shield;
+
 
 	void Awake () {
 		rb = GetComponent<Rigidbody2D> ();
 		collider = GetComponent<Collider2D> ();
 		anim = GetComponent<Animator> ();
+        spriteRenderer = GetComponent<SpriteRenderer>();
 		currentState = runStateHash;
 //		currentSize = sizes [0];
 		rchresults = new RaycastHit2D[3];
-		BoostPopUpController.Initialize ();
+        shitBullet = Resources.Load("Prefabs/Food/JunkFood/Dung");
+        shield = Resources.Load("Prefabs/Others/Shield");
+        BoostPopUpController.Initialize ();
 		PlusPopUpController.Initialize ();
 		IsWinPopUpController.Initialize ();
-	}
+        audio = GetComponent<AudioSource>();
+    }
 
 	// Use this for initialization
 	void Start () {
@@ -161,22 +193,22 @@ public class Character : NetworkBehaviour {
 //		
 
 	// if character is stuck, nudge it a little
-	void NudgeCharacter() {
-		Vector2 currentPosition = transform.position;
+	//void NudgeCharacter() {
+	//	Vector2 currentPosition = transform.position;
 
-		if (currentPosition.Equals (lastPosition)) {
-			transform.position = currentPosition + new Vector2 (2, 0);;
-		}
+	//	if (currentPosition.Equals (lastPosition)) {
+	//		transform.position = currentPosition + new Vector2 (2, 0);;
+	//	}
 
-		lastPosition = currentPosition;
-	}
+	//	lastPosition = currentPosition;
+	//}
 
-	void FixedUpdate() {
-		if (!isLocalPlayer) {
-			return;
-		}
-		NudgeCharacter ();
-	}
+	//void FixedUpdate() {
+	//	if (!isLocalPlayer) {
+	//		return;
+	//	}
+	//	NudgeCharacter ();
+	//}
 
 	// Update is called once per frame
 	void Update () {
@@ -188,6 +220,13 @@ public class Character : NetworkBehaviour {
 //			currentSize = newSize;
 //			UpdateStatsWithSize ();
 //		}
+        if (isFinished)
+        {
+            moveSpeed = 0;
+            CmdJump();
+            return;
+        }
+
 		if (isServer) {
 			ReduceFatLevel ();
 
@@ -220,7 +259,17 @@ public class Character : NetworkBehaviour {
 		jumpForce = jumpForceSync;
 		anim.speed = animSpeedSync;
 		transform.localScale = new Vector3 (scaleSync, transform.localScale.y, transform.localScale.z);
-
+        if (isDyingAnimation)
+        {
+            moveSpeed = 0;
+            jumpForce = 0;
+            anim.speed = 0;
+            if (spriteRenderer.color.a > 0)
+            {
+                spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g,
+                                                    spriteRenderer.color.b, spriteRenderer.color.a - (Time.deltaTime / deathDuration));
+            }
+        }
 		float ms = moveSpeed;
 		float msy;
 		if (isJump) {
@@ -236,8 +285,20 @@ public class Character : NetworkBehaviour {
 		if (isLocalPlayer) {
 			ReduceHealth ();
 
-			// Change fat bar content and text
-			fatContent.fillAmount = fatLevel;
+            if (health <= 0)
+            {
+                // die
+                if (!isDead)
+                {
+                    audio.PlayOneShot(deathSound, 1F);
+                    Debug.Log("DIE");
+                    CmdDie();
+                }
+                return;
+            }
+
+            // Change fat bar content and text
+            fatContent.fillAmount = fatLevel;
 			fatText.text = (int)(100 * fatLevel) + "%";
 
 			// Change health bar content and text
@@ -265,7 +326,8 @@ public class Character : NetworkBehaviour {
 			int currentState = anim.GetCurrentAnimatorStateInfo (0).shortNameHash;
 			if (currentState == runStateHash) {
 				if (Input.GetKeyDown (KeyCode.Space) || (Input.touchCount > 0 && Input.GetTouch (0).phase == TouchPhase.Began)) {
-					CmdJump();
+                    audio.PlayOneShot(jumpSound,1F);
+                    CmdJump();
 					ChangeJump (true);
 					CmdChangeJump (true);
 				}
@@ -286,7 +348,6 @@ public class Character : NetworkBehaviour {
 			}
 		}
 	}
-
 
 	// CHANGE TO FALL ANIMATION
 	void ChangeFall(bool isFall) {
@@ -351,9 +412,66 @@ public class Character : NetworkBehaviour {
 		}
 	}
 
-	[Command]
+    [Command]
+    void CmdDie()
+    {
+        lock (deathLock)
+        {
+            if (!isDead)
+            {
+                RpcDie();
+                isDead = true;
+                isDyingAnimation = true;
+                StartCoroutine(RebornCoroutine());
+            }
+        }
+    }
+
+    [ClientRpc]
+    void RpcDie()
+    {
+        deathPosition = transform.position;
+    }
+
+    // Revive character if dead
+    IEnumerator RebornCoroutine()
+    {
+        // wait until reincarnation
+        yield return new WaitForSecondsRealtime (deathDuration);
+        {
+            // revive if death
+            isDyingAnimation = false;
+            isDead = false;
+            RpcReborn();
+        }
+        yield break;
+
+    }
+
+    [ClientRpc]
+    void RpcReborn()
+    {
+        // return character to position where it died
+        transform.position = deathPosition;
+        spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, 1.0f);
+        if (isLocalPlayer)
+        {
+            health = 1f;
+        }
+    }
+
+    [Command]
 	void CmdSpeedUpCoroutine(float seconds) {
-		StartCoroutine(SpeedUpCoroutine(seconds));
+        lock (isBoostedLock)
+        {
+            if (!isBoosted)
+            {
+                StartCoroutine(SpeedUpCoroutine(seconds));
+                isBoosted = true;
+                RpcCreateBoostPopUp("FOOD BURST!");
+            }
+        }
+        
 	}
 		
 	IEnumerator SpeedUpCoroutine(float seconds) {
@@ -384,12 +502,22 @@ public class Character : NetworkBehaviour {
 		}
 	}
 
-	[Command]
-	void CmdJumpForceCoroutine(float seconds) {
-		StartCoroutine(JumpForceCoroutine(seconds));
-	}
+    [Command]
+    void CmdJumpForceCoroutine(float seconds)
+    {
+        lock (isBoostedLock)
+        {
+            if (!isBoosted)
+            {
+                StartCoroutine(JumpForceCoroutine(seconds));
+                isBoosted = true;
+                RpcCreateBoostPopUp("SUPER JUMP!");
+            }
+        }
 
-	IEnumerator JumpForceCoroutine(float seconds) {
+    }
+
+    IEnumerator JumpForceCoroutine(float seconds) {
 		float prevJumpForce;
 		lock(isJumpForceControlledLock) {
 			isJumpForceControlled = true;
@@ -407,7 +535,97 @@ public class Character : NetworkBehaviour {
 		}
 	}
 
-	void OnCollisionEnter2D(Collision2D other) {
+    [Command]
+    void CmdShieldCoroutine(float seconds)
+    {
+        lock (isBoostedLock)
+        {
+            if (!isBoosted)
+            {
+                StartCoroutine(ShieldCoroutine(seconds));
+                isBoosted = true;
+                RpcCreateBoostPopUp("SAY NO TO FAST FOOD!");
+            }
+        }
+
+    }
+
+    IEnumerator ShieldCoroutine(float seconds)
+    {
+        isShield = true;
+        GameObject sh = Instantiate(shield, Vector2.zero, Quaternion.identity) as GameObject;
+        sh.transform.SetParent(transform);
+        sh.transform.localPosition = Vector2.zero;
+        NetworkServer.Spawn(sh);
+        yield return new WaitForSecondsRealtime(seconds);
+        isShield = false;
+        Destroy(sh);
+        lock (isBoostedLock)
+        {
+            isBoosted = false;
+        }
+    }
+
+    [Command]
+    void CmdTeleport()
+    {
+        RpcTeleport();
+        RpcCreateBoostPopUp("TELEPORTTTTT!");
+    }
+
+    [ClientRpc]
+    void RpcTeleport()
+    {
+        transform.position = new Vector2(transform.position.x + 100, transform.position.y + 100);
+    }
+
+    [Command]
+    void CmdBulletCoroutine(float seconds)
+    {
+        lock (isBoostedLock)
+        {
+            if (!isBoosted)
+            {
+                StartCoroutine(BulletCoroutine(seconds));
+                isBoosted = true;
+                RpcCreateBoostPopUp("SHIT FEST!");
+            }
+        }
+        
+    }
+   
+    IEnumerator BulletCoroutine(float seconds)
+    {
+        // Set up bullet on server
+        float startTime = Time.time;
+        float shitInterval = 0.35f;
+        while (Time.time - startTime < seconds)
+        {
+            GameObject bullet = Instantiate(shitBullet, new Vector2(transform.position.x - 5, transform.position.y + 5), Quaternion.identity) as GameObject;
+            bullet.GetComponent<Rigidbody2D>().velocity = new Vector2(-10, 5);
+
+            // spawn bullet on client, custom spawn handler will be called
+            NetworkServer.Spawn(bullet);
+            audio.PlayOneShot(poopSound, 1F);
+
+            // when the bullet is destroyed on the server it wil automatically be destroyed on clients
+            StartCoroutine(Destroy(bullet, 5.0f));
+            yield return new WaitForSecondsRealtime(shitInterval);
+        }
+        lock (isBoostedLock)
+        {
+            isBoosted = false;
+        }
+        yield break;
+    }
+
+    public IEnumerator Destroy(GameObject go, float timer)
+    {
+        yield return new WaitForSeconds(timer);
+        NetworkServer.UnSpawn(go);
+    }
+
+    void OnCollisionEnter2D(Collision2D other) {
 		// ignore collision from other players
 		if (other.gameObject.CompareTag("Player")) {
 			Physics2D.IgnoreCollision (other.gameObject.GetComponent<Collider2D>(), collider);
@@ -430,12 +648,12 @@ public class Character : NetworkBehaviour {
 		GameObject winObject = GameObject.Find ("CheckWinObject");
         Debug.Log("finding win object");
 		bool isWin = winObject.GetComponent<WinConditionCheck> ().CheckIsWin();
+        isFinished = true;
 		RpcIsWinMessage (isWin);
 	}
 
 	[ClientRpc]
 	void RpcIsWinMessage(bool isWin) {
-		print ("APPLE");
 		if (isWin)
 			IsWinPopUpController.createIsWinPopUp ();
 		else
@@ -448,6 +666,11 @@ public class Character : NetworkBehaviour {
 	void OnJunkFoodContact(Collider2D other) {
 		// add health and fats
 		// if hamburger, grow more fats
+        if (isShield)
+        {
+            return;
+        }
+        audio.PlayOneShot(burpSound, 1F);
 		if (other.tag.Contains ("Hamburger")) {
 			AddHealth (0.01f);
 			CmdAddFats (1.0f);
@@ -459,57 +682,64 @@ public class Character : NetworkBehaviour {
 		} else if (other.tag.Contains ("Dung")) {
 			AddHealth (-0.2f);
 			CmdAddFats (0.15f);
-			if (isLocalPlayer) {
-				PlusPopUpController.createHealthPlusPopUp ("-50% hp");
-				PlusPopUpController.createFatsPlusPopUp ("+15% fats");
+            if (isLocalPlayer) {
+				PlusPopUpController.createHealthPlusPopUp ("-25% hp");
+				PlusPopUpController.createFatsPlusPopUp ("+10% fats");
 				BoostPopUpController.createBoostPopUp2 ("EWW GROSS!");
 			}
 		} else {
 			AddHealth (0.05f);
 			CmdAddFats (0.5f);
-			if (isLocalPlayer) {
+            if (isLocalPlayer) {
 				PlusPopUpController.createHealthPlusPopUp ("+5% hp");
-				PlusPopUpController.createFatsPlusPopUp ("+50% fats");
+				PlusPopUpController.createFatsPlusPopUp ("+25% fats");
 			}
 		}
 
 		Destroy (other.gameObject);
 
 	}
-
+    
 	void OnFruitContact(Collider2D other) {
 		// add health and fats
 		AddHealth (0.2f);
 		CmdAddFats (0.05f);
 		if (isLocalPlayer) {
-			PlusPopUpController.createHealthPlusPopUp ("+20% hp");
+			PlusPopUpController.createHealthPlusPopUp ("+25% hp");
 			PlusPopUpController.createFatsPlusPopUp ("+5% fats");
-		}
+            audio.PlayOneShot(applecrunch, 1F);
+        }
 		Destroy (other.gameObject);
 
-		if (other.tag.Contains ("Cherry")) {
-			// gain lock on state
-			lock (isBoostedLock) {
-				if (!isBoosted) {
-					if (isLocalPlayer) {
-						BoostPopUpController.createBoostPopUp ("FOOD BURST!");
-						CmdSpeedUpCoroutine (3.0f);
-					}
-					isBoosted = true;							
-				}
-			}
-		}
-		if (other.tag.Contains ("Apple")) {
-			// gain lock on state
-			lock (isBoostedLock) {
-				if (!isBoosted) {
-					isBoosted = true;
-					if (isLocalPlayer) {
-						BoostPopUpController.createBoostPopUp ("SUPER JUMP!");
-						CmdJumpForceCoroutine (5.0f);
-					}
-				}
-			}
-		}
-	}
+        if (!isBoosted)
+        {
+            if (other.tag.Contains("Cherry"))
+            {
+                // gain lock on state
+                CmdSpeedUpCoroutine(3.0f);
+            }
+            else if (other.tag.Contains("Apple"))
+            {
+                // gain lock on state
+                CmdJumpForceCoroutine(5.0f);
+            }
+            else if (other.tag.Contains("Melon"))
+            {
+                CmdBulletCoroutine(5.0f);
+            }
+            else if (other.tag.Contains("Strawberry"))
+            {
+                audio.PlayOneShot(shieldSound, 1F);
+                CmdShieldCoroutine(5.0f);
+            }
+        }
+    }
+
+    [ClientRpc]
+    void RpcCreateBoostPopUp(string title)
+    {
+        if (!isLocalPlayer)
+            return;
+        BoostPopUpController.createBoostPopUp(title);
+    }
 }

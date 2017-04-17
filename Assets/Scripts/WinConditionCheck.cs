@@ -11,8 +11,10 @@ public class WinConditionCheck : NetworkBehaviour {
 		lock (winLock) {
 			if (!isWin) {
 				isWin = true;
+                // win
 				return true;
 			} 
+            // lost
 			return false;
 		}
 	}
