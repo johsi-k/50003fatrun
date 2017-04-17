@@ -24,7 +24,7 @@ public class EndGameHandler : MonoBehaviour {
     public void clickEndGame() // bound to OK button
     {
         Debug.Log("disconnect and return to main");
-        ((runLobbyManager.singleton) as runLobbyManager).StopHost();
+       ( (runLobbyManager.singleton) as runLobbyManager).StopClient();
     }
 
 }
