@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+// Pop Up controller for the Is Win UI
 public class IsWinPopUpController : MonoBehaviour {
 
 	private static GameObject canvas;
