@@ -7,11 +7,13 @@ using UnityEngine.Networking;
 
 public class Character : NetworkBehaviour {
 
-
-	private float health = 1f;
-	private float healthDropRate = 0.025f;
+    // references the health bar and fat level bar
 	private Image healthContent;
 	private Text healthText;
+    private Image fatContent;
+    private Text fatText;
+
+    // All the audio
     private AudioSource audio;
     public AudioClip applecrunch;
     public AudioClip jumpSound;
@@ -20,25 +22,25 @@ public class Character : NetworkBehaviour {
     public AudioClip deathSound;
     public AudioClip burpSound;
     
-	// amount of fats: from 0-1
+	// amount of fats: from 0-1; fat level is controlled by the server object
 	[SyncVar]
 	private float fatLevel = 1f;
 	// how much fats to drop per sec
 	private float fatDropRate = 0.1f;
-	private Image fatContent;
-	private Text fatText;
+        private float health = 1f;
+    private float healthDropRate = 0.025f;
 
-	// whether fruit is eaten
+	// whether fruit is eaten; managed by server;
     [SyncVar]
 	private bool isBoosted = false;
 
-	// whether these attributes are altered by fruits
+	// whether these attributes are altered by fruits; managed by server
 	private bool isMoveSpeedControlled = false;
 	private bool isJumpForceControlled = false;
 	private bool isAnimSpeedControlled = false;
 	private bool isScaleControlled = false;
 
-	// Locks for control
+	// Locks for control on the server
 	private UnityEngine.Object isBoostedLock = new UnityEngine.Object ();
 	private UnityEngine.Object isMoveSpeedControlledLock = new UnityEngine.Object ();
 	private UnityEngine.Object isJumpForceControlledLock = new UnityEngine.Object ();
@@ -52,18 +54,17 @@ public class Character : NetworkBehaviour {
     [SyncVar]
     private bool isDyingAnimation = false;
     private float deathDuration = 1.5f;
+    // position to return to upon death
     private Vector2 deathPosition;
 
-    // if the game is done for the player
-    [SyncVar]
-    private bool isFinished = false;
-    [SyncVar]
     // if character has shield, will not eat fast food
+    [SyncVar]
     private bool isShield = false;
 
+    // whether game has ended
     private bool isEnd = false;
 
-    //Syncvars
+    // Server to clients variable syncing
     [SyncVar]
 	private float moveSpeedSync;
 	[SyncVar]
@@ -84,6 +85,7 @@ public class Character : NetworkBehaviour {
 	public float jumpForce;
 	private bool isJump;
 
+    // Different animation states
 	private static int runStateHash = Animator.StringToHash ("CatRun");
 	private static int jumpStateHash = Animator.StringToHash ("CatJump");
 	private static int fallStateHash = Animator.StringToHash ("CatFall");
@@ -91,16 +93,18 @@ public class Character : NetworkBehaviour {
 	// the current animation state
 	private int currentState;
 
+    // check whether object is grounded, for animation change
 	[SerializeField]
 	private bool grounded = true;
 	[SerializeField]
 	private bool sideGrounded = true;
+    // determines how long the object has been grounded, for animation smoothening
 	private int notGroundedCount = 0;
-	private Vector2 lastPosition;
 	private RaycastHit2D[] rchresults;
 	[SerializeField]
 	private LayerMask ground;
 
+    // prefabs for boost animations
     private UnityEngine.Object shitBullet;
     private UnityEngine.Object shield;
     private UnityEngine.Object tornado;
@@ -112,7 +116,6 @@ public class Character : NetworkBehaviour {
 		anim = GetComponent<Animator> ();
         spriteRenderer = GetComponent<SpriteRenderer>();
 		currentState = runStateHash;
-//		currentSize = sizes [0];
 		rchresults = new RaycastHit2D[3];
         shitBullet = Resources.Load("Prefabs/Food/JunkFood/Dung");
         shield = Resources.Load("Prefabs/Others/Shield");
@@ -125,14 +128,10 @@ public class Character : NetworkBehaviour {
 
 	// Use this for initialization
 	void Start () {
-
         DontDestroyOnLoad(gameObject);
 
 		// prevents character from experiencing rotation due to gravity
 		rb.freezeRotation = true;
-
-		// used to nudge the character a little if it gets stuck for unknown reasons
-		lastPosition = (Vector2) transform.position - Vector2.left;
 
 		if (!isLocalPlayer) {
 			return;
@@ -172,68 +171,21 @@ public class Character : NetworkBehaviour {
 		}
 	}
 
-//	int GetSizeIndexFromLevel() {
-//		// returns the Size for a given fatLevel, using linear interpolation
-//		int index = (int) Mathf.Lerp(sizes.Length, 0, fatLevel);
-//		// -1 if fatLevel is min, cos index == sizes.Length does not exist
-//		if (index == sizes.Length)
-//			index -= 1;
-//		return index;
-//	}
-
-//	void UpdateStatsWithSize() {
-//		// Uses currentSize to update attributes
-//		moveSpeed = currentSize.moveSpeed;
-//		jumpForce = currentSize.jumpForce;
-//		transform.localScale = new Vector3 (currentSize.spriteScale, transform.localScale.y, transform.localScale.z);
-//		// push character towards ground since size has transformed, to avoid state change
-//		int currentState = anim.GetCurrentAnimatorStateInfo (0).shortNameHash;
-//		if (currentState == runStateHash) {
-//			
-//		}
-//
-//		anim.speed = currentSize.animationMoveSpeed;
-//	}
-//		
-
-	// if character is stuck, nudge it a little
-	//void NudgeCharacter() {
-	//	Vector2 currentPosition = transform.position;
-
-	//	if (currentPosition.Equals (lastPosition)) {
-	//		transform.position = currentPosition + new Vector2 (2, 0);;
-	//	}
-
-	//	lastPosition = currentPosition;
-	//}
-
-	//void FixedUpdate() {
-	//	if (!isLocalPlayer) {
-	//		return;
-	//	}
-	//	NudgeCharacter ();
-	//}
-
 	// Update is called once per frame
 	void Update () {
-//		int sizeIndex = GetSizeIndexFromLevel ();
-//		Size newSize = sizes [sizeIndex];
-//		bool hasChangedSize = newSize != currentSize;
-		// substitute stats if newSize != currentSize
-//		if (hasChangedSize) {
-//			currentSize = newSize;
-//			UpdateStatsWithSize ();
-//		}
-        if (isFinished)
+        // if the game has ended, player should not be able to move
+        if (isEnd)
         {
             moveSpeed = 0;
-            CmdJump();
             return;
         }
 
+        // Server-side updating
 		if (isServer) {
+            // Reduce the fat level and then sync down
 			ReduceFatLevel ();
 
+            // If fat level has changed, change the movespeed, jumpforce, animationspeed, and scale
 			if (HasFatLevelChanged ()) {
 				// lock so that if food is eaten, moveSpeed will not be changed by this
 				lock (isMoveSpeedControlledLock) {
@@ -254,15 +206,16 @@ public class Character : NetworkBehaviour {
 						scaleSync = Mathf.Lerp (1.0f, 3f, fatLevel);
 					}
 				}
-				// rb.AddForce (new Vector2 (0, -2), ForceMode2D.Impulse);
 			}
 		}
 
-	
+        // change the client side values to the values synced down by the server object
 		moveSpeed = moveSpeedSync;
 		jumpForce = jumpForceSync;
 		anim.speed = animSpeedSync;
 		transform.localScale = new Vector3 (scaleSync, transform.localScale.y, transform.localScale.z);
+
+        // stops movement if player is dying and fades player away
         if (isDyingAnimation)
         {
             moveSpeed = 0;
@@ -274,6 +227,8 @@ public class Character : NetworkBehaviour {
                                                     spriteRenderer.color.b, spriteRenderer.color.a - (Time.deltaTime / deathDuration));
             }
         }
+
+        // set velocity
 		float ms = moveSpeed;
 		float msy;
 		if (isJump) {
@@ -287,6 +242,7 @@ public class Character : NetworkBehaviour {
 
 		// ONLY THE REST ARE LOCAL
 		if (isLocalPlayer) {
+            // reduces health of player
 			ReduceHealth ();
 
             if (health <= 0)
@@ -295,7 +251,6 @@ public class Character : NetworkBehaviour {
                 if (!isDead)
                 {
                     audio.PlayOneShot(deathSound, 1F);
-                    Debug.Log("DIE");
                     CmdDie();
                 }
                 return;
@@ -309,7 +264,7 @@ public class Character : NetworkBehaviour {
 			healthContent.fillAmount = health;
 			healthText.text = (int)(100 * health) + "%";
 
-			//	Debug.DrawLine(transform.position, new Vector2(0, collider.bounds.extents.y), Color.green);
+            // Checks whether character is grounded
 			grounded = collider.Raycast (Vector2.down, rchresults, (float)(collider.bounds.extents.y + 0.3)) > 0;
 			sideGrounded = collider.Raycast (Vector2.right + Vector2.down, rchresults, (float)(collider.bounds.extents.y + 1.0)) > 0;
 			grounded = grounded || sideGrounded;
@@ -320,7 +275,6 @@ public class Character : NetworkBehaviour {
 			} else {
 				notGroundedCount = 0;
 			}
-
 
 			/////////////////
 			// Player Control
@@ -353,11 +307,16 @@ public class Character : NetworkBehaviour {
 		}
 	}
 
+    /////////////////////
+    // ANIMATION COMMANDS
+    /////////////////////
+
 	// CHANGE TO FALL ANIMATION
 	void ChangeFall(bool isFall) {
 		anim.SetBool ("isFall", isFall);
 	}
 
+    // Tells other client objects that the character is falling, through the server
 	[Command]
 	void CmdChangeFall(bool isFall) {
 		RpcChangeFall (isFall);
@@ -375,6 +334,7 @@ public class Character : NetworkBehaviour {
 		anim.SetBool ("isJump", isJump);
 	}
 
+    // Tells other client objects that the character is in the air, through the server
 	[Command]
 	void CmdChangeJump(bool isJump) {
 		RpcChangeJump(isJump);
@@ -386,7 +346,8 @@ public class Character : NetworkBehaviour {
 			return;
 		ChangeJump(isJump);
 	}
-		
+	
+    // Tells other client objects that the character has to jump, through the server
 	[Command]
 	void CmdJump() {
 		RpcJump ();
@@ -396,7 +357,12 @@ public class Character : NetworkBehaviour {
 	void RpcJump() {
 		isJump = true;
 	}
+
+    /////////////////////
+    // CHANGE FATS AND HEALTH COMMANDS
+    /////////////////////
 		
+    // Change Fat levels, through the server and synced down
 	[Command]
 	void CmdAddFats(float fats) {
 		// need synchronity
@@ -409,6 +375,7 @@ public class Character : NetworkBehaviour {
         }
 	}
 
+    // Change Health Levels
 	void AddHealth(float hp) {
 		// need synchronity
 		health += hp;
@@ -419,6 +386,10 @@ public class Character : NetworkBehaviour {
 		}
 	}
 
+    /////////////////////
+    // DEATH COMMANDS
+    /////////////////////
+    // Tells the server to tell all clients that the character has died
     [Command]
     void CmdDie()
     {
@@ -440,7 +411,7 @@ public class Character : NetworkBehaviour {
         deathPosition = transform.position;
     }
 
-    // Revive character if dead
+    // Revives character after "deathDuration"
     IEnumerator RebornCoroutine()
     {
         // wait until reincarnation
@@ -455,6 +426,7 @@ public class Character : NetworkBehaviour {
 
     }
 
+    // Tells all clients that the character has reborn
     [ClientRpc]
     void RpcReborn()
     {
@@ -467,6 +439,11 @@ public class Character : NetworkBehaviour {
         }
     }
 
+    /////////////////////
+    // BOOST COMMANDS
+    /////////////////////
+
+    // Tells all clients that the character has sped up
     [Command]
 	void CmdSpeedUpCoroutine(float seconds) {
         lock (isBoostedLock)
@@ -484,6 +461,7 @@ public class Character : NetworkBehaviour {
 	IEnumerator SpeedUpCoroutine(float seconds) {
 		float prevAnimSpeed;
 		float prevMoveSpeed;
+        // Increase speed and lock modification of speed while boost is applied
 		lock(isAnimSpeedControlledLock) {
 			isAnimSpeedControlled = true;
 			prevAnimSpeed = animSpeedSync;
@@ -495,6 +473,7 @@ public class Character : NetworkBehaviour {
 			moveSpeedSync = 60.0f;
 		}
 		yield return new WaitForSecondsRealtime (seconds);
+        // Revert speed to before boost is applied
 		lock (isAnimSpeedControlledLock) {
 			isAnimSpeedControlled = false;
 			animSpeedSync = prevAnimSpeed;
@@ -503,12 +482,13 @@ public class Character : NetworkBehaviour {
 			isMoveSpeedControlled = false;
 			moveSpeedSync = prevMoveSpeed;
 		}
+        // unlock boost
 		lock (isBoostedLock) {
-			Debug.Log ("Lock gone " + System.DateTime.Now);
 			isBoosted = false;
 		}
 	}
 
+    // Tells all clients that the character's jump Force has increased
     [Command]
     void CmdJumpForceCoroutine(float seconds)
     {
@@ -526,22 +506,25 @@ public class Character : NetworkBehaviour {
 
     IEnumerator JumpForceCoroutine(float seconds) {
 		float prevJumpForce;
+        // Increase jump and lock modification of jump while boost is applied
 		lock(isJumpForceControlledLock) {
 			isJumpForceControlled = true;
 			prevJumpForce = jumpForceSync;
 			jumpForceSync = 100.0f;
 		}
 		yield return new WaitForSecondsRealtime (seconds);
+        // Revert jump to before boost is applied
 		lock (isJumpForceControlledLock) {
 			isJumpForceControlled = false;
 			jumpForceSync = prevJumpForce;
 		}
+        // unlock boost
 		lock (isBoostedLock) {
-			Debug.Log ("Lock gone " + System.DateTime.Now);
 			isBoosted = false;
 		}
 	}
 
+    // Tells all clients that the character will have the shield animation
     [Command]
     void CmdShieldCoroutine(float seconds)
     {
@@ -557,6 +540,7 @@ public class Character : NetworkBehaviour {
 
     }
 
+    // Spawns the shield animation on all clients for a few seconds
     IEnumerator ShieldCoroutine(float seconds)
     {
         isShield = true;
@@ -573,6 +557,7 @@ public class Character : NetworkBehaviour {
         }
     }
 
+    // Tells all clients that the character will have the tornado animation
     [Command]
     void CmdTornadoCoroutine(float seconds)
     {
@@ -588,6 +573,7 @@ public class Character : NetworkBehaviour {
 
     }
 
+     // Spawns the tornado animation on all clients for a few seconds
     IEnumerator TornadoCoroutine(float seconds)
     {
         GameObject tor = Instantiate(tornado, Vector2.zero, Quaternion.identity) as GameObject;
@@ -607,19 +593,7 @@ public class Character : NetworkBehaviour {
         }
     }
 
-    [Command]
-    void CmdTeleport()
-    {
-        RpcTeleport();
-        RpcCreateBoostPopUp("TELEPORTTTTT!");
-    }
-
-    [ClientRpc]
-    void RpcTeleport()
-    {
-        transform.position = new Vector2(transform.position.x + 100, transform.position.y + 100);
-    }
-
+    // Produces the shit fest on the character
     [Command]
     void CmdBulletCoroutine(float seconds)
     {
@@ -635,6 +609,7 @@ public class Character : NetworkBehaviour {
         
     }
    
+    // Generates shit at a time interval of "shitInterval"
     IEnumerator BulletCoroutine(float seconds)
     {
         // Set up bullet on server
@@ -650,7 +625,7 @@ public class Character : NetworkBehaviour {
             audio.PlayOneShot(poopSound, 1F);
 
             // when the bullet is destroyed on the server it wil automatically be destroyed on clients
-            StartCoroutine(Destroy(bullet, 5.0f));
+            StartCoroutine(DestroyShit(bullet, 5.0f));
             yield return new WaitForSecondsRealtime(shitInterval);
         }
         lock (isBoostedLock)
@@ -660,12 +635,49 @@ public class Character : NetworkBehaviour {
         yield break;
     }
 
-    public IEnumerator Destroy(GameObject go, float timer)
+    // Destroys shit after "timer" seconds
+    public IEnumerator DestroyShit(GameObject go, float timer)
     {
-        yield return new WaitForSeconds(timer);
+        yield return new WaitForSecondsRealtime(timer);
         NetworkServer.UnSpawn(go);
     }
 
+    // Creates the boost popup on the local client
+    [ClientRpc]
+    void RpcCreateBoostPopUp(string title)
+    {
+        if (!isLocalPlayer)
+            return;
+        BoostPopUpController.createBoostPopUp(title);
+    }
+
+    /////////////////////
+    // Check Win Condition
+    /////////////////////
+    [Command]
+    void CmdCheckWinCondition() {
+        GameObject winObject = GameObject.Find ("CheckWinObject");
+        Debug.Log("finding win object");
+        bool isWin = winObject.GetComponent<WinConditionCheck> ().CheckIsWin();
+        RpcIsWinMessage (isWin);
+    }
+
+    [ClientRpc]
+    void RpcIsWinMessage(bool isWin) {
+        if (!isLocalPlayer)
+            return;
+        if (isWin)
+            IsWinPopUpController.createIsWinPopUp ();
+        else
+            IsWinPopUpController.createIsLostPopUp ();
+        GameObject.Find("Canvas").GetComponent<EndGameHandler>().showEndPanel();  // sets end panel to active
+        // EndGameHandler script is set as component of Canvas rather than ReturntoMenu panel because panel is inactive by default
+
+    }
+
+    /////////////////////
+    // Collision Management
+    /////////////////////
     void OnCollisionEnter2D(Collision2D other) {
 		// ignore collision from other players
 		if (other.gameObject.CompareTag("Player")) {
@@ -688,28 +700,6 @@ public class Character : NetworkBehaviour {
 			
         }
 	}
-
-	[Command]
-	void CmdCheckWinCondition() {
-		GameObject winObject = GameObject.Find ("CheckWinObject");
-        Debug.Log("finding win object");
-		bool isWin = winObject.GetComponent<WinConditionCheck> ().CheckIsWin();
-        isFinished = true;
-		RpcIsWinMessage (isWin);
-	}
-
-	[ClientRpc]
-	void RpcIsWinMessage(bool isWin) {
-        if (!isLocalPlayer)
-            return;
-		if (isWin)
-			IsWinPopUpController.createIsWinPopUp ();
-		else
-			IsWinPopUpController.createIsLostPopUp ();
-        GameObject.Find("Canvas").GetComponent<EndGameHandler>().showEndPanel();  // sets end panel to active
-        // EndGameHandler script is set as component of Canvas rather than ReturntoMenu panel because panel is inactive by default
-
-    }
 
 	void OnJunkFoodContact(Collider2D other) {
 		// add health and fats
@@ -812,13 +802,5 @@ public class Character : NetworkBehaviour {
                 CmdTornadoCoroutine(5.0f);
             }
         }
-    }
-
-    [ClientRpc]
-    void RpcCreateBoostPopUp(string title)
-    {
-        if (!isLocalPlayer)
-            return;
-        BoostPopUpController.createBoostPopUp(title);
     }
 }
