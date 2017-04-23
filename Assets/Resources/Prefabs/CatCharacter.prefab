@@ -11,18 +11,17 @@ Prefab:
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 1894664540505690}
   m_IsPrefabParent: 1
---- !u!1 &1064652207719398
+--- !u!1 &1355023054218110
 GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   serializedVersion: 5
   m_Component:
-  - component: {fileID: 4867875291225640}
-  - component: {fileID: 114752208432511694}
-  - component: {fileID: 50924338815744434}
-  - component: {fileID: 61267649911459012}
-  - component: {fileID: 114035629639245494}
+  - component: {fileID: 4461958536124178}
+  - component: {fileID: 114071939145708734}
+  - component: {fileID: 50511486906910748}
+  - component: {fileID: 61440459660193964}
   m_Layer: 0
   m_Name: FruitThrower
   m_TagString: Untagged
@@ -77,6 +76,19 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!4 &4461958536124178
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1355023054218110}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 18.076141, y: 30.044731, z: 11.8125}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4751905936848498}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4697670182366346
 Transform:
   m_ObjectHideFlags: 1
@@ -101,23 +113,30 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4697670182366346}
-  - {fileID: 4867875291225640}
+  - {fileID: 4461958536124178}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!4 &4867875291225640
-Transform:
+--- !u!50 &50511486906910748
+Rigidbody2D:
+  serializedVersion: 4
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1064652207719398}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 4751905936848498}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_GameObject: {fileID: 1355023054218110}
+  m_BodyType: 1
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 1
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 1
+  m_Material: {fileID: 0}
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
 --- !u!50 &50559912097791612
 Rigidbody2D:
   serializedVersion: 4
@@ -134,26 +153,6 @@ Rigidbody2D:
   m_AngularDrag: 0.05
   m_GravityScale: 5
   m_Material: {fileID: 6200000, guid: 11c144730fd714b7abc6ac8b946227a0, type: 2}
-  m_Interpolate: 0
-  m_SleepingMode: 1
-  m_CollisionDetection: 0
-  m_Constraints: 0
---- !u!50 &50924338815744434
-Rigidbody2D:
-  serializedVersion: 4
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1064652207719398}
-  m_BodyType: 1
-  m_Simulated: 1
-  m_UseFullKinematicContacts: 1
-  m_UseAutoMass: 0
-  m_Mass: 1
-  m_LinearDrag: 0
-  m_AngularDrag: 0.05
-  m_GravityScale: 1
-  m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
@@ -178,12 +177,12 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!61 &61267649911459012
+--- !u!61 &61440459660193964
 BoxCollider2D:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1064652207719398}
+  m_GameObject: {fileID: 1355023054218110}
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
@@ -737,38 +736,25 @@ MonoBehaviour:
   m_SnapThreshold: 5
   m_InterpolateRotation: 1
   m_InterpolateMovement: 1
---- !u!114 &114035629639245494
+--- !u!114 &114071939145708734
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1064652207719398}
+  m_GameObject: {fileID: 1355023054218110}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 372142912, guid: dc443db3e92b4983b9738c1131f555cb, type: 3}
+  m_Script: {fileID: 11500000, guid: 54caee71dbbd642dbb542feaaddd965a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_SceneId:
-    m_Value: 0
-  m_AssetId:
-    i0: 29
-    i1: 79
-    i2: 221
-    i3: 42
-    i4: 21
-    i5: 110
-    i6: 52
-    i7: 144
-    i8: 107
-    i9: 184
-    i10: 76
-    i11: 92
-    i12: 103
-    i13: 21
-    i14: 151
-    i15: 36
-  m_ServerOnly: 1
-  m_LocalPlayerAuthority: 0
+  fruits:
+  - {fileID: 1849435976055272, guid: 16e9c4bddce6d4be99c39884d58583f6, type: 2}
+  - {fileID: 1052023575163980, guid: 48796900f8b0f4d738bcc87082beacbc, type: 2}
+  - {fileID: 1606082201586630, guid: d92a6b1039cf4461db03f9156254339c, type: 2}
+  - {fileID: 1707208103873366, guid: b73458f6952327043a9b755d22c7ba63, type: 2}
+  - {fileID: 1283846071699908, guid: 6edc4fe623be1284b884fda441395113, type: 2}
+  - {fileID: 1957597631462716, guid: 55b1f49a0539f3543959593b4aaebace, type: 2}
+  - {fileID: 1485168414638892, guid: a2fc7b9c6caa04afdacdb1d117ea7370, type: 2}
 --- !u!114 &114274337308489434
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -857,22 +843,6 @@ MonoBehaviour:
   ground:
     serializedVersion: 2
     m_Bits: 256
---- !u!114 &114752208432511694
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1064652207719398}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 54caee71dbbd642dbb542feaaddd965a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  fruits:
-  - {fileID: 1849435976055272, guid: 16e9c4bddce6d4be99c39884d58583f6, type: 2}
-  - {fileID: 1052023575163980, guid: 48796900f8b0f4d738bcc87082beacbc, type: 2}
-  - {fileID: 1606082201586630, guid: d92a6b1039cf4461db03f9156254339c, type: 2}
-  - {fileID: 1485168414638892, guid: a2fc7b9c6caa04afdacdb1d117ea7370, type: 2}
 --- !u!114 &114987171505921950
 MonoBehaviour:
   m_ObjectHideFlags: 1

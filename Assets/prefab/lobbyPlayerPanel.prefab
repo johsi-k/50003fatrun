@@ -662,10 +662,12 @@ MonoBehaviour:
   - {fileID: 2800000, guid: 93b16aabf5f4401449117d8a293cc599, type: 3}
   - {fileID: 2800000, guid: ec86dec50c97af84ab1cdb7e06a48e5c, type: 3}
   - {fileID: 2800000, guid: 09608aa65affb7e4180f77619c0bf9e7, type: 3}
+  - {fileID: 2800000, guid: d5c86cc01e42e41539029d7e525ab886, type: 3}
   isThisLocalPlayer: 0
   prefab1: {fileID: 1894664540505690, guid: ca386c1f6f071dd4cb54242b3f9b237a, type: 2}
   prefab2: {fileID: 1950074056551780, guid: 6247c33faf0170341b4045ada8a2efda, type: 2}
   prefab3: {fileID: 1284636273487212, guid: 7252d9cbf2983c642ab63827a86c5f01, type: 2}
+  prefab4: {fileID: 1894664540505690, guid: 1d4fdd2a156e34906bb84c5c67159724, type: 2}
   thisPlayerReady: 0
 --- !u!222 &222090830984329312
 CanvasRenderer:

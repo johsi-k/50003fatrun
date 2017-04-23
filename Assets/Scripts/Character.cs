@@ -405,7 +405,7 @@ public class Character : NetworkBehaviour {
 			fatLevel = 1.0f;
 		} else if (fatLevel < 0f)
         {
-            fatLevel = 0f;
+            fatLevel = 0.01f;
         }
 	}
 
@@ -591,11 +591,15 @@ public class Character : NetworkBehaviour {
     IEnumerator TornadoCoroutine(float seconds)
     {
         GameObject tor = Instantiate(tornado, Vector2.zero, Quaternion.identity) as GameObject;
-        tor.transform.position = transform.position;
-        tor.GetComponent<TornadoDestroy>().SetFollow(transform, new Vector2(10, 0));
+        //tor.transform.position = transform.position;
+        //tor.GetComponent<TornadoDestroy>().SetFollow(transform, new Vector2(10, 0));
+        tor.transform.SetParent(transform);
+        tor.transform.localPosition = new Vector2(10, 5);
         GameObject tor2 = Instantiate(tornado, Vector2.zero, Quaternion.identity) as GameObject;
-        tor2.transform.position = transform.position;
-        tor2.GetComponent<TornadoDestroy>().SetFollow(transform, new Vector2(-10, 0));
+        //tor2.transform.position = transform.position;
+        //tor2.GetComponent<TornadoDestroy>().SetFollow(transform, new Vector2(-10, 0));
+        tor2.transform.SetParent(transform);
+        tor2.transform.localPosition = new Vector2(-10, 5);
         NetworkServer.Spawn(tor);
         NetworkServer.Spawn(tor2);
         yield return new WaitForSecondsRealtime(seconds);

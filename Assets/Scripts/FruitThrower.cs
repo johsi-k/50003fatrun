@@ -15,7 +15,7 @@ public class FruitThrower : NetworkBehaviour {
 	}
 
 	void Start () {
-		transform.localPosition = new Vector2 (200, 80);
+		transform.localPosition = new Vector2 (200, 30);
 	}
 
 	bool inverseExponential(float lambda, float x) {

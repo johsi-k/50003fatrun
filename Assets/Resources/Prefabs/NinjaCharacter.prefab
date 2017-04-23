@@ -11,18 +11,17 @@ Prefab:
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 1950074056551780}
   m_IsPrefabParent: 1
---- !u!1 &1119241965764804
+--- !u!1 &1182514474390966
 GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   serializedVersion: 5
   m_Component:
-  - component: {fileID: 4986021370727838}
-  - component: {fileID: 114138083383687406}
-  - component: {fileID: 50525999131821086}
-  - component: {fileID: 61791727919685240}
-  - component: {fileID: 114323276196192832}
+  - component: {fileID: 4880575494190874}
+  - component: {fileID: 114699348579660486}
+  - component: {fileID: 50144415806933770}
+  - component: {fileID: 61119322385305530}
   m_Layer: 0
   m_Name: FruitThrower
   m_TagString: Untagged
@@ -88,7 +87,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4876250253407676}
-  - {fileID: 4986021370727838}
+  - {fileID: 4880575494190874}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -105,26 +104,26 @@ Transform:
   m_Father: {fileID: 4243253936638100}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!4 &4986021370727838
+--- !u!4 &4880575494190874
 Transform:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1119241965764804}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_GameObject: {fileID: 1182514474390966}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 18.076141, y: 30.044731, z: 11.8125}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4243253936638100}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!50 &50525999131821086
+--- !u!50 &50144415806933770
 Rigidbody2D:
   serializedVersion: 4
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1119241965764804}
+  m_GameObject: {fileID: 1182514474390966}
   m_BodyType: 1
   m_Simulated: 1
   m_UseFullKinematicContacts: 1
@@ -178,12 +177,12 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!61 &61571900720007172
+--- !u!61 &61119322385305530
 BoxCollider2D:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1790049507266858}
+  m_GameObject: {fileID: 1182514474390966}
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
@@ -192,12 +191,12 @@ BoxCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
---- !u!61 &61791727919685240
+--- !u!61 &61571900720007172
 BoxCollider2D:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1119241965764804}
+  m_GameObject: {fileID: 1790049507266858}
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
@@ -709,7 +708,7 @@ Animator:
   m_GameObject: {fileID: 1950074056551780}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 22100000, guid: 2a8e8e0429e223a429d3b47be4808036, type: 2}
+  m_Controller: {fileID: 22100000, guid: 76f6df0af1d6bb043a492b65360a4bdb, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -717,54 +716,6 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
---- !u!114 &114138083383687406
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1119241965764804}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 54caee71dbbd642dbb542feaaddd965a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  fruits:
-  - {fileID: 1849435976055272, guid: 16e9c4bddce6d4be99c39884d58583f6, type: 2}
-  - {fileID: 1052023575163980, guid: 48796900f8b0f4d738bcc87082beacbc, type: 2}
-  - {fileID: 1606082201586630, guid: d92a6b1039cf4461db03f9156254339c, type: 2}
-  - {fileID: 1485168414638892, guid: a2fc7b9c6caa04afdacdb1d117ea7370, type: 2}
---- !u!114 &114323276196192832
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1119241965764804}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 372142912, guid: dc443db3e92b4983b9738c1131f555cb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SceneId:
-    m_Value: 0
-  m_AssetId:
-    i0: 98
-    i1: 71
-    i2: 195
-    i3: 63
-    i4: 175
-    i5: 1
-    i6: 112
-    i7: 52
-    i8: 27
-    i9: 64
-    i10: 69
-    i11: 173
-    i12: 168
-    i13: 162
-    i14: 239
-    i15: 218
-  m_ServerOnly: 1
-  m_LocalPlayerAuthority: 0
 --- !u!114 &114419581236116210
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -804,6 +755,25 @@ MonoBehaviour:
   - {fileID: 1895906934038484, guid: cafc90e458a814652bab63def09a6529, type: 2}
   - {fileID: 1473760820018630, guid: 6bb90e0ddacb242a3a1227cc0fcb3a68, type: 2}
   - {fileID: 1612547800607138, guid: 79aa8b9c18cad479bbaf4a8bc76b83c8, type: 2}
+--- !u!114 &114699348579660486
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1182514474390966}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 54caee71dbbd642dbb542feaaddd965a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fruits:
+  - {fileID: 1849435976055272, guid: 16e9c4bddce6d4be99c39884d58583f6, type: 2}
+  - {fileID: 1052023575163980, guid: 48796900f8b0f4d738bcc87082beacbc, type: 2}
+  - {fileID: 1606082201586630, guid: d92a6b1039cf4461db03f9156254339c, type: 2}
+  - {fileID: 1707208103873366, guid: b73458f6952327043a9b755d22c7ba63, type: 2}
+  - {fileID: 1283846071699908, guid: 6edc4fe623be1284b884fda441395113, type: 2}
+  - {fileID: 1957597631462716, guid: 55b1f49a0539f3543959593b4aaebace, type: 2}
+  - {fileID: 1485168414638892, guid: a2fc7b9c6caa04afdacdb1d117ea7370, type: 2}
 --- !u!114 &114930258974269854
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -20,6 +20,7 @@ public class runLobbyPlayer : NetworkLobbyPlayer {
     public GameObject prefab1;
     public GameObject prefab2;
     public GameObject prefab3;
+    public GameObject prefab4;
 
     [SyncVar]
     int sprite_selected;
@@ -105,9 +106,12 @@ public class runLobbyPlayer : NetworkLobbyPlayer {
             } else if(sprite_selected == 1)
             {
                 gamePlayerInstance = Instantiate(prefab2, spawn, Quaternion.identity);
-            } else
+            } else if(sprite_selected == 2)
             {
                 gamePlayerInstance = Instantiate(prefab3, spawn, Quaternion.identity);
+            } else
+            {
+                gamePlayerInstance = Instantiate(prefab4, spawn, Quaternion.identity);
             }
 
             // gamePlayer customisation goes here
