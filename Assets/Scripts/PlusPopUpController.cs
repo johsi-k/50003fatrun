@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+// Controller for the add health and add fats pop up
 public class PlusPopUpController : MonoBehaviour {
 
 	public class RGB {
@@ -28,7 +29,7 @@ public class PlusPopUpController : MonoBehaviour {
 		}
 	}
 
-	public static void createHealthPlusPopUp(string text) {//Transform location) {
+	public static void createHealthPlusPopUp(string text) {
 		createPlusPopUp (text, healthColor, new Vector2(0, 5));
 	}
 
@@ -38,10 +39,8 @@ public class PlusPopUpController : MonoBehaviour {
 
 	public static void createPlusPopUp(string text, RGB color, Vector2 offset) {
 		PlusPopUpParent instance = Instantiate (plusPopUp);
-//		Vector2 screenPosition = new Vector2(location.position.x, location.position.y + Random.Range(0f, 0.2f));
 		instance.transform.SetParent (canvas.transform, false);
 		instance.transform.position = (Vector2)instance.transform.position + offset;
-//		instance.transform.position = screenPosition;
 		instance.SetColor (new Color (color.r, color.g, color.b));
 		instance.SetText (text);
 

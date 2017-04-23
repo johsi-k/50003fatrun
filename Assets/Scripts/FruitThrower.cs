@@ -3,23 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
+// The object that throws fruit
 public class FruitThrower : NetworkBehaviour {
 
 	[SerializeField]
 	private GameObject[] fruits;
-	private float x = 2.0f;
-	private float lambda = 1.0f;
 	private float unifChance = 0.005f;
-	// Use this for initialization
-	void Awake () {
-	}
 
 	void Start () {
+<<<<<<< HEAD
 		transform.localPosition = new Vector2 (200, 30);
-	}
-
-	bool inverseExponential(float lambda, float x) {
-		return Random.Range (0f, 1.0f) < Mathf.Exp (-lambda * x);
+=======
+		// sets the location of the fruit thrower to be 200 meters on the x-axis and 80 meters on the y-axis away from the character
+		transform.localPosition = new Vector2 (200, 80);
+>>>>>>> origin/master
 	}
 
 	void Update() {
@@ -27,18 +24,15 @@ public class FruitThrower : NetworkBehaviour {
 	}
 
 
+	// Throws food with a uniform chance
 	void ThrowFruits() {
-		// generator function
 		if (Random.Range(0f, 1.0f) < unifChance) {
-//			Debug.Log ("Fruit thrown at " + transform.position);
 			GameObject fruit = fruits [Random.Range (0, fruits.Length)];
 			NetworkServer.Spawn (Instantiate (fruit, transform.position, Quaternion.identity));
-//			unifChance *= 0.99f;
 		}
-//		Vector2 newPosition = (Vector2)transform.position + new Vector2 (1, 0); 
-//		transform.position = newPosition;
 	}
 
+	// Gets destroyed when it reaches the endpoint
 	void OnTriggerEnter2D(Collider2D other) {
 		if (other.gameObject.CompareTag("Endpoint")) {
 			Destroy(gameObject);

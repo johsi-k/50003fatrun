@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+// Parent of the PlusPopUpController to ensure that pop up animation is always above the character's head
 public class PlusPopUpParent : MonoBehaviour {
 	public Animator animator;
 	private Text popUpText;

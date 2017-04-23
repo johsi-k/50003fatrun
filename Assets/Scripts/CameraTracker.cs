@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// Used to track the character
 public class CameraTracker : MonoBehaviour {
 
 	private Transform playerTransform;

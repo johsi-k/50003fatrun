@@ -4,16 +4,11 @@ using UnityEngine;
 using UnityEngine.UI;
 
 
+// For character changing in lobby
 public class CharacterChange : MonoBehaviour {
     public RawImage rawimage;
     public Texture[] rawimages;
     private int counter = 0;
-
-
-	// Use this for initialization
-	void Start () {
-		
-	}
 	
 	// Update is called once per frame
 	void Update () {

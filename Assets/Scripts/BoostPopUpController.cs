@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+// Singleton that manages the Boost Pop Up UI
 public class BoostPopUpController : MonoBehaviour {
 
 	private static GameObject canvas;
 	private static Object boostPopUp;
 	private static Object boostPopUp2;
 
+	// Initialize the Singleton
 	public static void Initialize() {
 		if (!canvas) {
 			canvas = GameObject.Find ("Canvas");
@@ -17,6 +19,7 @@ public class BoostPopUpController : MonoBehaviour {
 		}
 	}
 
+	// Create the Boost Pop Up
 	public static void createBoostPopUp(string text) {
 		GameObject instance = Instantiate (boostPopUp) as GameObject;
 		AnimatorClipInfo[] info = instance.GetComponent<Animator> ().GetCurrentAnimatorClipInfo (0);
@@ -25,6 +28,7 @@ public class BoostPopUpController : MonoBehaviour {
 		instance.GetComponent<Text> ().text = text;
 	}
 
+	// Create the Boost Pop Up
 	public static void createBoostPopUp2(string text) {
 		GameObject instance = Instantiate (boostPopUp2) as GameObject;
 		AnimatorClipInfo[] info = instance.GetComponent<Animator> ().GetCurrentAnimatorClipInfo (0);
